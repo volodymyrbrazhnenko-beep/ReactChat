@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="reactchat.client/reactchat.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="ReactChat.Server/ReactChat.Server.csproj" />
+</Solution>
