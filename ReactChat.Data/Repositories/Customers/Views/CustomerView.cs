@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public required string UserName { get; set; }
         public required string Email { get; set; }
-        public string? Icon { get; set; }
+        public bool IsIcon { get; set; }
     }
 }

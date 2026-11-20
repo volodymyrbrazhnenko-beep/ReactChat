@@ -32,7 +32,7 @@ namespace ReactChat.Data.Repositories.Customers
                     Id = item.Id,
                     UserName = item.UserName,
                     Email = item.Email,
-                    Icon = item.Icon,
+                    IsIcon = item.IsIcon,
                 })
                 .FirstOrDefaultAsync();
         }

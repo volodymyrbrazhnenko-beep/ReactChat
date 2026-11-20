@@ -8,6 +8,6 @@
         public string? Title { get; set; }
         public required string Text { get; set; }
         public virtual ChatMessage? ParentMessage { get; set; }
-        public virtual Customer? Customer { get; set; }
+        public virtual required Customer Customer { get; set; }
     }
 }
