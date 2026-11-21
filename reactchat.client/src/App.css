@@ -1,11 +1,85 @@
 ﻿#root {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem;
     text-align: center;
 }
 
-th, td {
-    padding-left: 1rem;
-    padding-right: 1rem;
+.top-menu {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--border);
+    background: var(--code-bg);
+}
+
+.top-menu a {
+    padding: 1rem 1.25rem;
+    color: var(--text-h);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+
+.top-menu a:hover,
+.top-menu a:focus-visible {
+    background: var(--accent-bg);
+}
+
+.top-menu a.active {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+}
+
+main {
+    padding: 1.5rem 2rem 2.5rem;
+}
+
+.page h1 {
+    margin: 0 0 1.25rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-grid {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-grid th,
+.data-grid td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-grid th {
+    background: var(--code-bg);
+    color: var(--text-h);
+}
+
+.data-grid tbody tr:hover {
+    background: var(--accent-bg);
+}
+
+.status-message {
+    margin: 2rem 0;
+}
+
+.status-message.error {
+    color: #b42318;
+}
+
+@media (max-width: 640px) {
+    main {
+        padding: 1.25rem 1rem 2rem;
+    }
+
+    .top-menu a {
+        flex: 1;
+    }
+
+    .data-grid th,
+    .data-grid td {
+        padding: 0.6rem 0.75rem;
+    }
 }
