@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Loading from './Loading';
 
-function ChatTitlesPage() {
+function ChatTitlesPage({ onAdd }) {
     const [pageData, setPageData] = useState();
     const [error, setError] = useState();
     const [pageNumber, setPageNumber] = useState(1);
@@ -73,7 +73,10 @@ function ChatTitlesPage() {
 
     return (
         <div className="page">
-            <h1>Chat Titles</h1>
+            <div className="page-heading">
+                <h1>Chat Titles</h1>
+                <button type="button" className="primary-button" onClick={onAdd}>Add Chat Title</button>
+            </div>
             <div className="table-wrapper">
                 <table className="data-grid">
                     <thead>

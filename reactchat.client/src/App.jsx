@@ -1,16 +1,23 @@
 ﻿import { useEffect, useState } from 'react';
+import AddChatTitle from './components/AddChatTitle';
 import ChatTitlesPage from './components/ChatTitlesPage';
 import WeatherPage from './components/WeatherPage';
 import './App.css';
 
+function pageForPath(path) {
+    if (path === '/weather') {
+        return 'weather';
+    }
+
+    return path === '/add-chat-title' ? 'addChatTitle' : 'chatTitles';
+}
+
 function App() {
-    const [activePage, setActivePage] = useState(() =>
-        window.location.pathname === '/weather' ? 'weather' : 'chatTitles'
-    );
+    const [activePage, setActivePage] = useState(() => pageForPath(window.location.pathname));
 
     useEffect(() => {
         function handlePopState() {
-            setActivePage(window.location.pathname === '/weather' ? 'weather' : 'chatTitles');
+            setActivePage(pageForPath(window.location.pathname));
         }
 
         window.addEventListener('popstate', handlePopState);
@@ -18,8 +25,8 @@ function App() {
     }, []);
 
     function navigate(event, page) {
-        event.preventDefault();
-        const path = page === 'weather' ? '/weather' : '/chat-titles';
+        event?.preventDefault();
+        const path = page === 'weather' ? '/weather' : page === 'addChatTitle' ? '/add-chat-title' : '/chat-titles';
 
         if (window.location.pathname !== path) {
             window.history.pushState({}, '', path);
@@ -32,7 +39,7 @@ function App() {
         <>
             <nav className="top-menu" aria-label="Main navigation">
                 <a
-                    className={activePage === 'chatTitles' ? 'active' : ''}
+                    className={activePage !== 'weather' ? 'active' : ''}
                     href="/chat-titles"
                     onClick={event => navigate(event, 'chatTitles')}
                 >
@@ -47,7 +54,9 @@ function App() {
                 </a>
             </nav>
             <main>
-                {activePage === 'chatTitles' ? <ChatTitlesPage /> : <WeatherPage />}
+                {activePage === 'chatTitles' && <ChatTitlesPage onAdd={() => navigate(null, 'addChatTitle')} />}
+                {activePage === 'addChatTitle' && <AddChatTitle onCancel={() => navigate(null, 'chatTitles')} />}
+                {activePage === 'weather' && <WeatherPage />}
             </main>
         </>
     );

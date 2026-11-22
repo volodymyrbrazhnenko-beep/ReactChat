@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReactChat.Data.Repositories.ChatMessages.Views;
+using ReactChat.Server.Models;
 using ReactChat.Services;
 
 namespace ReactChat.Server.Controllers
@@ -47,6 +48,13 @@ namespace ReactChat.Server.Controllers
                 pageNumber,
                 25);
             return Ok(titles);
+        }
+
+        [HttpPost("AddTitle")]
+        public async Task<IActionResult> AddTitle([FromBody] AddChatTitleRequest request)
+        {
+            await _chatService.AddTitleAsync(request.Email, request.UserName, request.Title, request.Text);
+            return NoContent();
         }
     }
 }

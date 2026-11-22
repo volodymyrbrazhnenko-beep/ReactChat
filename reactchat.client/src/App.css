@@ -36,6 +36,79 @@ main {
     margin: 0 0 1.25rem;
 }
 
+.page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.page-heading h1 {
+    margin: 0;
+}
+
+.primary-button,
+.form-actions button {
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--accent-border);
+    border-radius: 4px;
+    color: var(--text-h);
+    background: var(--accent-bg);
+    font: inherit;
+    cursor: pointer;
+}
+
+.primary-button:hover,
+.primary-button:focus-visible,
+.form-actions button:hover,
+.form-actions button:focus-visible {
+    background: var(--accent-border);
+}
+
+.form-page {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.chat-title-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.chat-title-form label {
+    display: grid;
+    gap: 0.35rem;
+    color: var(--text-h);
+}
+
+.chat-title-form input,
+.chat-title-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-h);
+    background: var(--bg);
+    font: inherit;
+}
+
+.chat-title-form textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.form-actions .secondary-button {
+    background: var(--code-bg);
+}
+
 .table-wrapper {
     overflow-x: auto;
 }
@@ -130,6 +203,11 @@ main {
 
     .top-menu a {
         flex: 1;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .data-grid th,
