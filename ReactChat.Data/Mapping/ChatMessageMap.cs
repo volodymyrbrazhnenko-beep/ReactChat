@@ -29,6 +29,12 @@ namespace ReactChat.Data.Mapping
                 .IsRequired(false)
                 .HasForeignKey(i => i.ParentMessageId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(i => i.RootMessage)
+                .WithMany()
+                .IsRequired(false)
+                .HasForeignKey(i => i.RootMessageId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

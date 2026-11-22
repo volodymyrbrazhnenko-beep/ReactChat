@@ -39,6 +39,9 @@ namespace ReactChat.Data.Migrations
                     b.Property<int?>("ParentMessageId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RootMessageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
@@ -51,6 +54,8 @@ namespace ReactChat.Data.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("ParentMessageId");
+
+                    b.HasIndex("RootMessageId");
 
                     b.ToTable("ChatMessage", (string)null);
                 });
@@ -70,6 +75,9 @@ namespace ReactChat.Data.Migrations
 
                     b.Property<string>("HomePage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Icon")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<bool>("IsIcon")
                         .HasColumnType("bit");
@@ -95,9 +103,16 @@ namespace ReactChat.Data.Migrations
                         .HasForeignKey("ParentMessageId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("ReactChat.Domain.ChatMessage", "RootMessage")
+                        .WithMany()
+                        .HasForeignKey("RootMessageId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Customer");
 
                     b.Navigation("ParentMessage");
+
+                    b.Navigation("RootMessage");
                 });
 #pragma warning restore 612, 618
         }
