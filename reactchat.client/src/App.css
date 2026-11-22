@@ -226,6 +226,10 @@ main {
     background: var(--accent-bg);
 }
 
+.chat-message-grid .chat-message-cell {
+    padding-left: calc(0.5rem + var(--message-indent));
+}
+
 .chat-message-text {
     white-space: pre-wrap;
 }
