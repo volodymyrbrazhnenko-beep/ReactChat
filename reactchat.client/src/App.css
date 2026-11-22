@@ -220,6 +220,22 @@ main {
     white-space: pre-wrap;
 }
 
+.chat-id{
+    width: 100px;
+    margin-right: 1rem;
+    color:silver;
+}
+
+.chat-user {
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+.chat-time {
+    margin-right: 1rem;
+}
+
+
 .secondary-button {
     padding: 0.65rem 1rem;
     border: 1px solid var(--border);

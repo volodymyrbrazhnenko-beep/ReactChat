@@ -61,25 +61,26 @@ function ChatPage({ id, onBack }) {
             </div>
             <div className="table-wrapper">
                 <table className="data-grid chat-message-grid">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>User Name</th>
-                            <th>Created On (Local Time)</th>
-                            <th>Text</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         {messages.map(message => (
                             <tr key={message.id} className={message.id === Number(id) ? 'root-message' : ''}>
-                                <td>{message.id}</td>
-                                <td>{message.userName}</td>
                                 <td>
-                                    <time dateTime={message.createdOnUtc}>
-                                        {new Date(message.createdOnUtc).toLocaleString()}
-                                    </time>
+                                    <div>
+                                        <span class="chat-id">
+                                            {message.id}
+                                        </span>   
+                                        <span class="chat-user">
+                                            {message.userName}
+                                        </span> 
+                                         <time dateTime={message.createdOnUtc} class="chat-time">
+                                            {new Date(message.createdOnUtc).toLocaleString()}
+                                        </time>
+                                        <button name="add-message">Add Message</button>
+                                    </div>
+                                    <div class="chat-message-text">
+                                        {message.text}
+                                    </div>
                                 </td>
-                                <td className="chat-message-text">{message.text}</td>
                             </tr>
                         ))}
                     </tbody>
