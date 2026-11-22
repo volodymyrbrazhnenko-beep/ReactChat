@@ -57,6 +57,22 @@ main {
     color: var(--text-h);
 }
 
+.sort-button {
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    font-weight: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sort-button:hover,
+.sort-button:focus-visible {
+    text-decoration: underline;
+}
+
 .data-grid tbody tr:hover {
     background: var(--accent-bg);
 }
@@ -89,6 +105,14 @@ main {
     white-space: pre-wrap;
     font-size: 13px;
     color: gray;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .status-message {

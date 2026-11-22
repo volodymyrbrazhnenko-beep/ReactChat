@@ -14,9 +14,9 @@ namespace ReactChat.Data.Repositories.ChatMessages
             _uow = uow;
         }
 
-        public async Task<List<TitleView>> GetTitleViewsAsync()
+        public async Task<TitlePageView> GetTitleViewsAsync(string sortBy, bool ascending, int pageNumber, int pageSize)
         {
-            return await Source
+            var titleQuery = Source
                 .Where(item => item.Title != null)
                 .Where(item => item.ParentMessageId == null)
                 .Select(item => new TitleView
@@ -24,12 +24,38 @@ namespace ReactChat.Data.Repositories.ChatMessages
                     Id = item.Id,
                     CustomerId = item.CustomerId,
                     UserName = item.Customer.UserName,
+                    Email = item.Customer.Email,
                     Title = item.Title ?? "---",
                     Text = item.Text,
                     CreatedOnUtc = item.CreatedOnUtc
-                })
-                .OrderByDescending(item => item.CreatedOnUtc)
-                .ToListAsync();
-        } 
+                });
+
+            var totalCount = await titleQuery.CountAsync();
+            var orderedTitles = sortBy switch
+            {
+                "username" => ascending ? titleQuery.OrderBy(item => item.UserName) : titleQuery.OrderByDescending(item => item.UserName),
+                "email" => ascending ? titleQuery.OrderBy(item => item.Email) : titleQuery.OrderByDescending(item => item.Email),
+                "title" => ascending ? titleQuery.OrderBy(item => item.Title) : titleQuery.OrderByDescending(item => item.Title),
+                "createdonutc" => ascending ? titleQuery.OrderBy(item => item.CreatedOnUtc) : titleQuery.OrderByDescending(item => item.CreatedOnUtc),
+                _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, "Unsupported title sort field.")
+            };
+
+            var skip = (long)(pageNumber - 1) * pageSize;
+            var items = skip >= totalCount
+                ? new List<TitleView>()
+                : await orderedTitles
+                    .ThenBy(item => item.Id)
+                    .Skip((int)skip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+            return new TitlePageView
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
     }
 }

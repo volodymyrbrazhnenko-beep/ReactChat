@@ -11,9 +11,9 @@ namespace ReactChat.Services
             _uow = uow;
         }
 
-        public async Task<List<TitleView>> GetTitleViewsAsync()
+        public async Task<TitlePageView> GetTitleViewsAsync(string sortBy, bool ascending, int pageNumber, int pageSize)
         {
-            return await _uow.ChatMessageRepository.GetTitleViewsAsync();
+            return await _uow.ChatMessageRepository.GetTitleViewsAsync(sortBy, ascending, pageNumber, pageSize);
         }
 
     }

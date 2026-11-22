@@ -4,6 +4,6 @@ namespace ReactChat.Services
 {
     public interface IChatService
     {
-        Task<List<TitleView>> GetTitleViewsAsync();
+        Task<TitlePageView> GetTitleViewsAsync(string sortBy, bool ascending, int pageNumber, int pageSize);
     }
 }

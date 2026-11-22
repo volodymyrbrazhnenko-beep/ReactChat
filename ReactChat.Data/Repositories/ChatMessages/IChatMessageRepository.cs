@@ -5,6 +5,6 @@ namespace ReactChat.Data.Repositories.ChatMessages
 {
     public interface IChatMessageRepository : IBaseRepository<ChatMessage>
     {
-        Task<List<TitleView>> GetTitleViewsAsync();
+        Task<TitlePageView> GetTitleViewsAsync(string sortBy, bool ascending, int pageNumber, int pageSize);
     }
 }
