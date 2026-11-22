@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Loading from './Loading';
 
-function ChatPage({ id, onBack }) {
+function ChatPage({ id, onBack, onAddMessage }) {
     const [messages, setMessages] = useState();
     const [error, setError] = useState();
 
@@ -66,18 +66,18 @@ function ChatPage({ id, onBack }) {
                             <tr key={message.id} className={message.id === Number(id) ? 'root-message' : ''}>
                                 <td>
                                     <div>
-                                        <span class="chat-id">
+                                        <span className="chat-id">
                                             {message.id}
-                                        </span>   
-                                        <span class="chat-user">
+                                        </span>
+                                        <span className="chat-user">
                                             {message.userName}
-                                        </span> 
-                                         <time dateTime={message.createdOnUtc} class="chat-time">
+                                        </span>
+                                        <time dateTime={message.createdOnUtc} className="chat-time">
                                             {new Date(message.createdOnUtc).toLocaleString()}
                                         </time>
-                                        <button name="add-message">Add Message</button>
+                                        <button type="button" name="add-message" onClick={() => onAddMessage(message.id)}>Add Message</button>
                                     </div>
-                                    <div class="chat-message-text">
+                                    <div className="chat-message-text">
                                         {message.text}
                                     </div>
                                 </td>

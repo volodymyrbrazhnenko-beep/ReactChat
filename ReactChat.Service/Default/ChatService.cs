@@ -48,5 +48,40 @@ namespace ReactChat.Services
             await _uow.CompleteAsync();
         }
 
+        public async Task<bool> AddMessageAsync(int parentMessageId, string email, string userName, string text)
+        {
+            var parentMessage = await _uow.ChatMessageRepository.GetEntityAsync(parentMessageId);
+            if (parentMessage is null)
+            {
+                return false;
+            }
+
+            email = email.Trim();
+            var customer = await _uow.CustomerRepository.GetCustomerByEmailAsync(email);
+            if (customer is null)
+            {
+                customer = new Customer
+                {
+                    Email = email,
+                    UserName = userName.Trim()
+                };
+                _uow.CustomerRepository.Add(customer);
+            }
+
+            _uow.ChatMessageRepository.Add(new ChatMessage
+            {
+                CustomerId = customer.Id,
+                Customer = customer,
+                ParentMessageId = parentMessageId,
+                ParentMessage = parentMessage,
+                RootMessageId = parentMessage.RootMessageId ?? parentMessage.Id,
+                CreatedOnUtc = DateTime.UtcNow,
+                Text = text
+            });
+
+            await _uow.CompleteAsync();
+            return true;
+        }
+
     }
 }

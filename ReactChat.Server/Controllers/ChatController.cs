@@ -68,5 +68,16 @@ namespace ReactChat.Server.Controllers
             await _chatService.AddTitleAsync(request.Email, request.UserName, request.Title, request.Text);
             return NoContent();
         }
+
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> AddMessage([FromBody] AddChatMessageRequest request)
+        {
+            var added = await _chatService.AddMessageAsync(
+                request.ParentMessageId,
+                request.Email,
+                request.UserName,
+                request.Text);
+            return added ? NoContent() : NotFound("Parent message not found.");
+        }
     }
 }
