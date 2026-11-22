@@ -156,6 +156,22 @@ main {
     gap: 0.5rem;
 }
 
+.title-link {
+    padding: 0;
+    border: 0;
+    color: var(--accent);
+    background: transparent;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.title-link:hover,
+.title-link:focus-visible {
+    text-decoration: underline;
+}
+
 .title-text-toggle {
     display: inline-flex;
     align-items: center;
@@ -194,6 +210,29 @@ main {
 
 .status-message.error {
     color: #b42318;
+}
+
+.chat-message-grid .root-message {
+    background: var(--accent-bg);
+}
+
+.chat-message-text {
+    white-space: pre-wrap;
+}
+
+.secondary-button {
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-h);
+    background: var(--code-bg);
+    font: inherit;
+    cursor: pointer;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+    background: var(--accent-bg);
 }
 
 @media (max-width: 640px) {

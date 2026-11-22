@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import AddChatTitle from './components/AddChatTitle';
 import ChatTitlesPage from './components/ChatTitlesPage';
+import ChatPage from './components/ChatPage';
 import WeatherPage from './components/WeatherPage';
 import './App.css';
 
@@ -9,7 +10,20 @@ function pageForPath(path) {
         return 'weather';
     }
 
-    return path === '/add-chat-title' ? 'addChatTitle' : 'chatTitles';
+    if (path === '/add-chat-title') {
+        return 'addChatTitle';
+    }
+
+    if (path.startsWith('/chat/')) {
+        return 'chat';
+    }
+
+    return 'chatTitles';
+}
+
+function chatIdForPath(path) {
+    const match = /^\/chat\/([^/]+)\/?$/.exec(path);
+    return match ? decodeURIComponent(match[1]) : null;
 }
 
 function App() {
@@ -24,9 +38,15 @@ function App() {
         return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
-    function navigate(event, page) {
+    function navigate(event, page, id) {
         event?.preventDefault();
-        const path = page === 'weather' ? '/weather' : page === 'addChatTitle' ? '/add-chat-title' : '/chat-titles';
+        const path = page === 'weather'
+            ? '/weather'
+            : page === 'addChatTitle'
+                ? '/add-chat-title'
+                : page === 'chat'
+                    ? `/chat/${encodeURIComponent(id)}`
+                    : '/chat-titles';
 
         if (window.location.pathname !== path) {
             window.history.pushState({}, '', path);
@@ -54,7 +74,13 @@ function App() {
                 </a>
             </nav>
             <main>
-                {activePage === 'chatTitles' && <ChatTitlesPage onAdd={() => navigate(null, 'addChatTitle')} />}
+                {activePage === 'chatTitles' && (
+                    <ChatTitlesPage
+                        onAdd={() => navigate(null, 'addChatTitle')}
+                        onOpenChat={id => navigate(null, 'chat', id)}
+                    />
+                )}
+                {activePage === 'chat' && <ChatPage id={chatIdForPath(window.location.pathname)} onBack={() => navigate(null, 'chatTitles')} />}
                 {activePage === 'addChatTitle' && <AddChatTitle onCancel={() => navigate(null, 'chatTitles')} />}
                 {activePage === 'weather' && <WeatherPage />}
             </main>

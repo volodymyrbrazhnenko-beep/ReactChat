@@ -17,6 +17,11 @@ namespace ReactChat.Services
             return await _uow.ChatMessageRepository.GetTitleViewsAsync(sortBy, ascending, pageNumber, pageSize);
         }
 
+        public async Task<List<ChatMessageView>> GetChatMessagesAsync(int rootMessageId)
+        {
+            return await _uow.ChatMessageRepository.GetChatMessagesAsync(rootMessageId);
+        }
+
         public async Task AddTitleAsync(string email, string userName, string title, string? text)
         {
             email = email.Trim();

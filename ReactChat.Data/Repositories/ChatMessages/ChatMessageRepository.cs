@@ -57,5 +57,50 @@ namespace ReactChat.Data.Repositories.ChatMessages
                 PageSize = pageSize
             };
         }
+
+        public async Task<List<ChatMessageView>> GetChatMessagesAsync(int rootMessageId)
+        {
+            var rootMessage = await Source
+                .Where(item => item.Id == rootMessageId && item.ParentMessageId == null)
+                .Select(item => new ChatMessageView
+                {
+                    Id = item.Id,
+                    CustomerId = item.CustomerId,
+                    ParentMessageId = item.ParentMessageId,
+                    CreatedOnUtc = item.CreatedOnUtc,
+                    Title = item.Title,
+                    Text = item.Text,
+                    UserName = item.Customer.UserName,
+                    Email = item.Customer.Email,
+                    IsIcon = item.Customer.IsIcon
+                })
+                .SingleOrDefaultAsync();
+
+            if (rootMessage is null)
+            {
+                return new List<ChatMessageView>();
+            }
+
+            var replies = await Source
+                .Where(item => item.RootMessageId == rootMessageId)
+                .OrderBy(item => item.CreatedOnUtc)
+                .ThenBy(item => item.Id)
+                .Select(item => new ChatMessageView
+                {
+                    Id = item.Id,
+                    CustomerId = item.CustomerId,
+                    ParentMessageId = item.ParentMessageId,
+                    CreatedOnUtc = item.CreatedOnUtc,
+                    Title = item.Title,
+                    Text = item.Text,
+                    UserName = item.Customer.UserName,
+                    Email = item.Customer.Email,
+                    IsIcon = item.Customer.IsIcon
+                })
+                .ToListAsync();
+
+            replies.Insert(0, rootMessage);
+            return replies;
+        }
     }
 }

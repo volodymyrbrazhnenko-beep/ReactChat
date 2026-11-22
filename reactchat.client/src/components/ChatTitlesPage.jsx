@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Loading from './Loading';
 
-function ChatTitlesPage({ onAdd }) {
+function ChatTitlesPage({ onAdd, onOpenChat }) {
     const [pageData, setPageData] = useState();
     const [error, setError] = useState();
     const [pageNumber, setPageNumber] = useState(1);
@@ -112,7 +112,13 @@ function ChatTitlesPage({ onAdd }) {
                                 <td>{title.email}</td>
                                 <td>
                                     <div className="title-heading">
-                                        <span>{title.title}</span>
+                                        <button
+                                            type="button"
+                                            className="title-link"
+                                            onClick={() => onOpenChat(title.id)}
+                                        >
+                                            {title.title}
+                                        </button>
                                         {typeof title.text === 'string' && title.text.trim() !== '' && (
                                             <button
                                                 type="button"

@@ -50,6 +50,18 @@ namespace ReactChat.Server.Controllers
             return Ok(titles);
         }
 
+        [HttpGet("GetMessages/{rootMessageId:int}", Name = "GetMessages")]
+        public async Task<ActionResult<List<ChatMessageView>>> GetMessages(int rootMessageId)
+        {
+            var messages = await _chatService.GetChatMessagesAsync(rootMessageId);
+            if (messages.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(messages);
+        }
+
         [HttpPost("AddTitle")]
         public async Task<IActionResult> AddTitle([FromBody] AddChatTitleRequest request)
         {
