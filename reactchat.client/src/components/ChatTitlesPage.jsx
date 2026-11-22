@@ -38,7 +38,6 @@ function ChatTitlesPage() {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Customer ID</th>
                             <th>User Name</th>
                             <th>Title</th>
                             <th>Created On (Local Time)</th>
@@ -48,7 +47,6 @@ function ChatTitlesPage() {
                         {titles.map(title => (
                             <tr key={title.id}>
                                 <td>{title.id}</td>
-                                <td>{title.customerId}</td>
                                 <td>{title.userName}</td>
                                 <td>{title.title}</td>
                                 <td>
