@@ -1,12 +1,24 @@
+using ReactChat.Server.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
+// Register ApplicationDbContext via extension (reads "DefaultConnection" from appsettings.json)
+builder.Services.AddApplicationDbContext(builder.Configuration);
+builder.Services.AddCoreModules(builder.Configuration);
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.MigrateDatabase();
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
@@ -15,6 +27,14 @@ app.MapStaticAssets();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+var isDevelopment = app.Environment.IsDevelopment();
+// Configure the HTTP request pipeline.
+if (isDevelopment)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

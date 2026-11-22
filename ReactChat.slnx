@@ -3,5 +3,8 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="ReactChat.Data/ReactChat.Data.csproj" Id="f3d5a546-d494-425a-ab21-f244bb89b81f" />
+  <Project Path="ReactChat.Domain/ReactChat.Domain.csproj" Id="ffec7196-422b-4d70-8548-c1e403b24090" />
   <Project Path="ReactChat.Server/ReactChat.Server.csproj" />
+  <Project Path="ReactChat.Service/ReactChat.Services.csproj" Id="7fc0a812-7566-45d7-8b7e-0d106cf0cacf" />
 </Solution>
