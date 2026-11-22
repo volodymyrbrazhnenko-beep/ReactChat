@@ -24,7 +24,8 @@ namespace ReactChat.Data.Repositories.ChatMessages
                     Id = item.Id,
                     CustomerId = item.CustomerId,
                     UserName = item.Customer.UserName,
-                    Title = item.Title ?? string.Empty,
+                    Title = item.Title ?? "---",
+                    Text = item.Text,
                     CreatedOnUtc = item.CreatedOnUtc
                 })
                 .OrderByDescending(item => item.CreatedOnUtc)
