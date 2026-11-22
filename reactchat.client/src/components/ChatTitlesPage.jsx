@@ -41,7 +41,7 @@ function ChatTitlesPage() {
                             <th>Customer ID</th>
                             <th>User Name</th>
                             <th>Title</th>
-                            <th>Created On (UTC)</th>
+                            <th>Created On (Local Time)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,7 +51,11 @@ function ChatTitlesPage() {
                                 <td>{title.customerId}</td>
                                 <td>{title.userName}</td>
                                 <td>{title.title}</td>
-                                <td>{new Date(title.createdOnUtc).toLocaleString()}</td>
+                                <td>
+                                    <time dateTime={title.createdOnUtc}>
+                                        {new Date(title.createdOnUtc).toLocaleString()}
+                                    </time>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
