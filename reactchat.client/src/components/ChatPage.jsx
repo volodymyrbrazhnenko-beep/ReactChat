@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import Loading from './Loading';
 
 function orderMessages(messages, rootMessageId) {
@@ -118,7 +120,9 @@ function ChatPage({ id, onBack, onAddMessage }) {
                                         <time dateTime={message.createdOnUtc} className="chat-time">
                                             {new Date(message.createdOnUtc).toLocaleString()}
                                         </time>
-                                        <button type="button" className="btn btn-sm btn-primary" name="add-message" onClick={() => onAddMessage(message.id)}>Add Message</button>
+                                        <button type="button" className="chat-add-message-button" name="add-message" title="Add Message" aria-label="Add Message" onClick={() => onAddMessage(message.id)}>
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                        </button>
                                     </div>
                                     <div className="chat-message-text">
                                         {message.text}
