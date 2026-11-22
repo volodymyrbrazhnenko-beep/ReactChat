@@ -23,7 +23,7 @@ function WeatherPage() {
     }, []);
 
     if (error) {
-        return <p className="status-message error" role="alert">Unable to load weather data: {error}</p>;
+        return <div className="alert alert-danger" role="alert">Unable to load weather data: {error}</div>;
     }
 
     if (!forecasts) {
@@ -32,9 +32,9 @@ function WeatherPage() {
 
     return (
         <div className="page">
-            <h1>Weather forecast</h1>
-            <div className="table-wrapper">
-                <table className="data-grid">
+            <h1 className="h2 mb-4">Weather forecast</h1>
+            <div className="table-responsive">
+                <table className="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
                             <th>Date</th>

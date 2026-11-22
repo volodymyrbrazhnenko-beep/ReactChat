@@ -47,27 +47,35 @@ function AddChatTitle({ onCancel }) {
     }
 
     return (
-        <section className="page form-page">
-            <h1>Add Chat Title</h1>
-            <form className="chat-title-form" onSubmit={handleSubmit}>
-                <label htmlFor="chat-title-email">eMail <span aria-hidden="true">*</span></label>
-                <input id="chat-title-email" name="email" type="email" maxLength="200" required />
+        <section className="page mx-auto" style={{ maxWidth: '640px' }}>
+            <h1 className="h2 mb-4">Add Chat Title</h1>
+            <form className="card card-body" onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="chat-title-email">eMail <span aria-hidden="true">*</span></label>
+                    <input className="form-control" id="chat-title-email" name="email" type="email" maxLength="200" required />
+                </div>
 
-                <label htmlFor="chat-title-user-name">User Name <span aria-hidden="true">*</span></label>
-                <input id="chat-title-user-name" name="userName" type="text" maxLength="200" required />
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="chat-title-user-name">User Name <span aria-hidden="true">*</span></label>
+                    <input className="form-control" id="chat-title-user-name" name="userName" type="text" maxLength="200" required />
+                </div>
 
-                <label htmlFor="chat-title-title">Title <span aria-hidden="true">*</span></label>
-                <input id="chat-title-title" name="title" type="text" maxLength="400" required />
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="chat-title-title">Title <span aria-hidden="true">*</span></label>
+                    <input className="form-control" id="chat-title-title" name="title" type="text" maxLength="400" required />
+                </div>
 
-                <label htmlFor="chat-title-text">Text</label>
-                <textarea id="chat-title-text" name="text" />
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="chat-title-text">Text</label>
+                    <textarea className="form-control" id="chat-title-text" name="text" rows="5" />
+                </div>
 
-                {error && <p className="status-message error" role="alert">Unable to add chat title: {error}</p>}
-                <div className="form-actions">
-                    <button type="submit" disabled={isSubmitting}>
+                {error && <div className="alert alert-danger" role="alert">Unable to add chat title: {error}</div>}
+                <div className="d-flex gap-2">
+                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
-                    <button type="button" className="secondary-button" onClick={onCancel} disabled={isSubmitting}>
+                    <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
                         Cancel
                     </button>
                 </div>

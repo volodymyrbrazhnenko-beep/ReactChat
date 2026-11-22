@@ -61,7 +61,7 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
     }, [pageNumber, sortBy, sortDirection]);
 
     if (error) {
-        return <p className="status-message error" role="alert">Unable to load chat titles: {error}</p>;
+        return <div className="alert alert-danger" role="alert">Unable to load chat titles: {error}</div>;
     }
 
     if (!pageData) {
@@ -73,32 +73,32 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
 
     return (
         <div className="page">
-            <div className="page-heading">
-                <h1>Chat Titles</h1>
-                <button type="button" className="primary-button" onClick={onAdd}>Add Chat Title</button>
+            <div className="d-flex align-items-center justify-content-between gap-3 mb-4">
+                <h1 className="h2 mb-0">Chat Titles</h1>
+                <button type="button" className="btn btn-primary" onClick={onAdd}>Add Chat Title</button>
             </div>
-            <div className="table-wrapper">
-                <table className="data-grid">
+            <div className="table-responsive">
+                <table className="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th aria-sort={sortBy === 'userName' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                                <button type="button" className="sort-button" onClick={() => handleSort('userName')}>
+                                <button type="button" className="btn btn-link sort-button p-0 text-decoration-none text-reset" onClick={() => handleSort('userName')}>
                                     User Name {sortIndicator('userName')}
                                 </button>
                             </th>
                             <th aria-sort={sortBy === 'email' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                                <button type="button" className="sort-button" onClick={() => handleSort('email')}>
+                                <button type="button" className="btn btn-link sort-button p-0 text-decoration-none text-reset" onClick={() => handleSort('email')}>
                                     eMail {sortIndicator('email')}
                                 </button>
                             </th>
                             <th aria-sort={sortBy === 'title' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                                <button type="button" className="sort-button" onClick={() => handleSort('title')}>
+                                <button type="button" className="btn btn-link sort-button p-0 text-decoration-none text-reset" onClick={() => handleSort('title')}>
                                     Title {sortIndicator('title')}
                                 </button>
                             </th>
                             <th aria-sort={sortBy === 'createdOnUtc' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}>
-                                <button type="button" className="sort-button" onClick={() => handleSort('createdOnUtc')}>
+                                <button type="button" className="btn btn-link sort-button p-0 text-decoration-none text-reset" onClick={() => handleSort('createdOnUtc')}>
                                     Created On (Local Time) {sortIndicator('createdOnUtc')}
                                 </button>
                             </th>
@@ -114,7 +114,7 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                                     <div className="title-heading">
                                         <button
                                             type="button"
-                                            className="title-link"
+                                            className="btn btn-link title-link p-0 text-start"
                                             onClick={() => onOpenChat(title.id)}
                                         >
                                             {title.title}
@@ -122,7 +122,7 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                                         {typeof title.text === 'string' && title.text.trim() !== '' && (
                                             <button
                                                 type="button"
-                                                className="title-text-toggle"
+                                                className="btn btn-sm btn-outline-secondary title-text-toggle"
                                                 aria-label={`${expandedTitleIds.has(title.id) ? 'Hide' : 'Show'} text for ${title.title}`}
                                                 aria-expanded={expandedTitleIds.has(title.id)}
                                                 aria-controls={`chat-title-text-${title.id}`}
@@ -155,9 +155,10 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                     </tbody>
                 </table>
             </div>
-            <div className="pagination-controls" aria-label="Chat titles pagination">
+            <div className="d-flex align-items-center justify-content-center gap-3 mt-3" aria-label="Chat titles pagination">
                 <button
                     type="button"
+                    className="btn btn-outline-primary"
                     onClick={() => setPageNumber(currentPage => currentPage - 1)}
                     disabled={isLoading || pageNumber <= 1}
                 >
@@ -166,6 +167,7 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                 <span>Page {pageData.pageNumber} of {pageCount} ({pageData.totalCount} records)</span>
                 <button
                     type="button"
+                    className="btn btn-outline-primary"
                     onClick={() => setPageNumber(currentPage => currentPage + 1)}
                     disabled={isLoading || pageNumber >= pageCount}
                 >

@@ -47,24 +47,30 @@ function AddMessage({ parentId, onCancel }) {
     }
 
     return (
-        <section className="page form-page">
-            <h1>Add Message</h1>
-            <form className="chat-title-form" onSubmit={handleSubmit}>
-                <label htmlFor="message-email">eMail <span aria-hidden="true">*</span></label>
-                <input id="message-email" name="email" type="email" maxLength="200" required />
+        <section className="page mx-auto" style={{ maxWidth: '640px' }}>
+            <h1 className="h2 mb-4">Add Message</h1>
+            <form className="card card-body" onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="message-email">eMail <span aria-hidden="true">*</span></label>
+                    <input className="form-control" id="message-email" name="email" type="email" maxLength="200" required />
+                </div>
 
-                <label htmlFor="message-user-name">User Name <span aria-hidden="true">*</span></label>
-                <input id="message-user-name" name="userName" type="text" maxLength="200" required />
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="message-user-name">User Name <span aria-hidden="true">*</span></label>
+                    <input className="form-control" id="message-user-name" name="userName" type="text" maxLength="200" required />
+                </div>
 
-                <label htmlFor="message-text">Text <span aria-hidden="true">*</span></label>
-                <textarea id="message-text" name="text" required />
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="message-text">Text <span aria-hidden="true">*</span></label>
+                    <textarea className="form-control" id="message-text" name="text" rows="5" required />
+                </div>
 
-                {error && <p className="status-message error" role="alert">Unable to add message: {error}</p>}
-                <div className="form-actions">
-                    <button type="submit" disabled={isSubmitting || !parentId}>
+                {error && <div className="alert alert-danger" role="alert">Unable to add message: {error}</div>}
+                <div className="d-flex gap-2">
+                    <button type="submit" className="btn btn-primary" disabled={isSubmitting || !parentId}>
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
-                    <button type="button" className="secondary-button" onClick={onCancel} disabled={isSubmitting}>
+                    <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
                         Cancel
                     </button>
                 </div>

@@ -1,7 +1,17 @@
 ﻿#root {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    text-align: left;
+}
+
+.app-shell {
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+.app-shell main {
     max-width: 1280px;
-    margin: 0 auto;
-    text-align: center;
 }
 
 .top-menu {

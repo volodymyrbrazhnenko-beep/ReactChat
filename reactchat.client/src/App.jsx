@@ -68,24 +68,31 @@ function App() {
     }
 
     return (
-        <>
-            <nav className="top-menu" aria-label="Main navigation">
-                <a
-                    className={activePage !== 'weather' ? 'active' : ''}
-                    href="/chat-titles"
-                    onClick={event => navigate(event, 'chatTitles')}
-                >
-                    Chat Titles
-                </a>
-                <a
-                    className={activePage === 'weather' ? 'active' : ''}
-                    href="/weather"
-                    onClick={event => navigate(event, 'weather')}
-                >
-                    Weather
-                </a>
+        <div className="app-shell">
+            <nav className="navbar navbar-expand navbar-dark bg-primary shadow-sm" aria-label="Main navigation">
+                <div className="container-fluid">
+                    <a className="navbar-brand" href="/chat-titles" onClick={event => navigate(event, 'chatTitles')}>
+                        ReactChat
+                    </a>
+                    <div className="navbar-nav">
+                        <a
+                            className={`nav-link ${activePage !== 'weather' ? 'active' : ''}`}
+                            href="/chat-titles"
+                            onClick={event => navigate(event, 'chatTitles')}
+                        >
+                            Chat Titles
+                        </a>
+                        <a
+                            className={`nav-link ${activePage === 'weather' ? 'active' : ''}`}
+                            href="/weather"
+                            onClick={event => navigate(event, 'weather')}
+                        >
+                            Weather
+                        </a>
+                    </div>
+                </div>
             </nav>
-            <main>
+            <main className="container-fluid py-4">
                 {activePage === 'chatTitles' && (
                     <ChatTitlesPage
                         onAdd={() => navigate(null, 'addChatTitle')}
@@ -108,7 +115,7 @@ function App() {
                 {activePage === 'addChatTitle' && <AddChatTitle onCancel={() => navigate(null, 'chatTitles')} />}
                 {activePage === 'weather' && <WeatherPage />}
             </main>
-        </>
+        </div>
     );
 }
 
