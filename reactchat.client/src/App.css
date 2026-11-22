@@ -61,6 +61,36 @@ main {
     background: var(--accent-bg);
 }
 
+.title-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.title-text-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.25rem;
+    border: 0;
+    border-radius: 4px;
+    color: var(--text-h);
+    background: transparent;
+    cursor: pointer;
+}
+
+.title-text-toggle:hover,
+.title-text-toggle:focus-visible {
+    background: var(--code-bg);
+}
+
+.title-text {
+    margin-top: 0.4rem;
+    white-space: pre-wrap;
+    font-size: 13px;
+    color: gray;
+}
+
 .status-message {
     margin: 2rem 0;
 }

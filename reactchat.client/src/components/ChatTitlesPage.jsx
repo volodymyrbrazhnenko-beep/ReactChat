@@ -4,6 +4,19 @@ import Loading from './Loading';
 function ChatTitlesPage() {
     const [titles, setTitles] = useState();
     const [error, setError] = useState();
+    const [expandedTitleIds, setExpandedTitleIds] = useState(() => new Set());
+
+    function toggleTitleText(titleId) {
+        setExpandedTitleIds(currentIds => {
+            const nextIds = new Set(currentIds);
+            if (nextIds.has(titleId)) {
+                nextIds.delete(titleId);
+            } else {
+                nextIds.add(titleId);
+            }
+            return nextIds;
+        });
+    }
 
     useEffect(() => {
         async function populateChatTitles() {
@@ -48,7 +61,32 @@ function ChatTitlesPage() {
                             <tr key={title.id}>
                                 <td>{title.id}</td>
                                 <td>{title.userName}</td>
-                                <td>{title.title}</td>
+                                <td>
+                                    <div className="title-heading">
+                                        <span>{title.title}</span>
+                                        {typeof title.text === 'string' && title.text.trim() !== '' && (
+                                            <button
+                                                type="button"
+                                                className="title-text-toggle"
+                                                aria-label={`${expandedTitleIds.has(title.id) ? 'Hide' : 'Show'} text for ${title.title}`}
+                                                aria-expanded={expandedTitleIds.has(title.id)}
+                                                aria-controls={`chat-title-text-${title.id}`}
+                                                onClick={() => toggleTitleText(title.id)}
+                                            >
+                                                <span aria-hidden="true">{expandedTitleIds.has(title.id) ? '▼' : '▶'}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                    {typeof title.text === 'string' && title.text.trim() !== '' && (
+                                        <div
+                                            id={`chat-title-text-${title.id}`}
+                                            className="title-text"
+                                            hidden={!expandedTitleIds.has(title.id)}
+                                        >
+                                            {title.text}
+                                        </div>
+                                    )}
+                                </td>
                                 <td>
                                     <time dateTime={title.createdOnUtc}>
                                         {new Date(title.createdOnUtc).toLocaleString()}
