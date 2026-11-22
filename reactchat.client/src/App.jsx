@@ -5,30 +5,43 @@ import './App.css';
 
 function App() {
     const [activePage, setActivePage] = useState(() =>
-        window.location.hash === '#weather' ? 'weather' : 'chatTitles'
+        window.location.pathname === '/weather' ? 'weather' : 'chatTitles'
     );
 
     useEffect(() => {
-        function handleHashChange() {
-            setActivePage(window.location.hash === '#weather' ? 'weather' : 'chatTitles');
+        function handlePopState() {
+            setActivePage(window.location.pathname === '/weather' ? 'weather' : 'chatTitles');
         }
 
-        window.addEventListener('hashchange', handleHashChange);
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
+
+    function navigate(event, page) {
+        event.preventDefault();
+        const path = page === 'weather' ? '/weather' : '/chat-titles';
+
+        if (window.location.pathname !== path) {
+            window.history.pushState({}, '', path);
+        }
+
+        setActivePage(page);
+    }
 
     return (
         <>
             <nav className="top-menu" aria-label="Main navigation">
                 <a
                     className={activePage === 'chatTitles' ? 'active' : ''}
-                    href="#chat-titles"
+                    href="/chat-titles"
+                    onClick={event => navigate(event, 'chatTitles')}
                 >
                     Chat Titles
                 </a>
                 <a
                     className={activePage === 'weather' ? 'active' : ''}
-                    href="#weather"
+                    href="/weather"
+                    onClick={event => navigate(event, 'weather')}
                 >
                     Weather
                 </a>
