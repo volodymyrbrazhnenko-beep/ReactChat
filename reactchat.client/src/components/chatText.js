@@ -24,6 +24,10 @@ function isSafeHref(value) {
 }
 
 function getTag(token) {
+    if (token === '<br />') {
+        return { name: 'br', selfClosing: true };
+    }
+
     if (token === '<code>' || token === '</code>' || token === '<i>' || token === '</i>' || token === '<strong>' || token === '</strong>') {
         return { name: token.slice(token.startsWith('</') ? 2 : 1, -1), closing: token.startsWith('</') };
     }
@@ -58,6 +62,11 @@ export function isValidChatText(value) {
         const tag = getTag(value.slice(opening, closing + 1));
         if (!tag) {
             return false;
+        }
+
+        if (tag.selfClosing) {
+            position = closing + 1;
+            continue;
         }
 
         if (tag.closing) {
@@ -97,6 +106,11 @@ export function renderChatText(value) {
         }
 
         const tag = getTag(part);
+        if (tag.selfClosing) {
+            stack[stack.length - 1].children.push(createElement(tag.name, { key: key++ }));
+            continue;
+        }
+
         if (tag.closing) {
             const element = stack.pop();
             stack[stack.length - 1].children.push(createElement(element.name, { ...element.props, key: key++ }, ...element.children));

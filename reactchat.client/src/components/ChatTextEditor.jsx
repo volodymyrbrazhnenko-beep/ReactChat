@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBold, faCode, faItalic, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faBold, faCode, faItalic, faLink } from '@fortawesome/free-solid-svg-icons';
 import { isValidChatText } from './chatText';
 
 function ChatTextEditor({ id, name, rows, required = false }) {
@@ -14,7 +14,7 @@ function ChatTextEditor({ id, name, rows, required = false }) {
             return;
         }
 
-        textarea.setCustomValidity(isValidChatText(value) ? '' : 'Use only links, code, italic, and bold tags with matching opening and closing tags.');
+        textarea.setCustomValidity(isValidChatText(value) ? '' : 'Use only links, code, italic, bold, and line-break tags with matching opening and closing tags.');
         const selection = selectionRef.current;
         if (selection) {
             selectionRef.current = undefined;
@@ -27,6 +27,14 @@ function ChatTextEditor({ id, name, rows, required = false }) {
         const textarea = textareaRef.current;
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
+        if (tagName === 'br') {
+            const nextValue = `${value.slice(0, start)}<br />${value.slice(end)}`;
+            const cursorPosition = start + '<br />'.length;
+            selectionRef.current = { start: cursorPosition, end: cursorPosition };
+            setValue(nextValue);
+            return;
+        }
+
         const selectedText = value.slice(start, end) || (tagName === 'a' ? 'link text' : 'text');
         const openingTag = tagName === 'a'
             ? '<a href="https://example.com" title="Link title">'
@@ -42,7 +50,7 @@ function ChatTextEditor({ id, name, rows, required = false }) {
 
     function handleChange(event) {
         const nextValue = event.currentTarget.value;
-        event.currentTarget.setCustomValidity(isValidChatText(nextValue) ? '' : 'Use only links, code, italic, and bold tags with matching opening and closing tags.');
+        event.currentTarget.setCustomValidity(isValidChatText(nextValue) ? '' : 'Use only links, code, italic, bold, and line-break tags with matching opening and closing tags.');
         setValue(nextValue);
     }
 
@@ -63,6 +71,9 @@ function ChatTextEditor({ id, name, rows, required = false }) {
                 <button type="button" className="btn btn-outline-secondary" title="Insert bold" aria-label="Insert bold" onClick={() => insertTag('strong')}>
                     <FontAwesomeIcon icon={faBold} aria-hidden="true" />
                 </button>
+                <button type="button" className="btn btn-outline-secondary" title="Insert line break" aria-label="Insert line break" onClick={() => insertTag('br')}>
+                    <FontAwesomeIcon icon={faArrowDown} aria-hidden="true" />
+                </button>
             </div>
             <textarea
                 ref={textareaRef}
@@ -75,8 +86,8 @@ function ChatTextEditor({ id, name, rows, required = false }) {
                 aria-describedby={`${id}-help`}
                 required={required}
             />
-            <div id={`${id}-help`} className="form-text">Only links, code, italic, and bold formatting are allowed.</div>
-            {isInvalid && <div className="invalid-feedback d-block">Use only links, code, italic, and bold tags with matching opening and closing tags.</div>}
+            <div id={`${id}-help`} className="form-text">Only links, code, italic, bold, and line-break formatting are allowed.</div>
+            {isInvalid && <div className="invalid-feedback d-block">Use only links, code, italic, bold, and line-break tags with matching opening and closing tags.</div>}
         </>
     );
 }

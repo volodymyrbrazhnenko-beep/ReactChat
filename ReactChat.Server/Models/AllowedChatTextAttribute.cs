@@ -26,7 +26,7 @@ namespace ReactChat.Server.Models
 
             if (value is not string text || !ContainsOnlyAllowedMarkup(text))
             {
-                return new ValidationResult(ErrorMessage ?? "Text may contain only links, code, italic, and bold tags.");
+                return new ValidationResult(ErrorMessage ?? "Text may contain only links, code, italic, bold, and line-break tags.");
             }
 
             return ValidationResult.Success;
@@ -52,7 +52,12 @@ namespace ReactChat.Server.Models
                 }
 
                 var token = text[opening..(closing + 1)];
-                if (token == "</a>")
+                if (token == "<br />")
+                {
+                    position = closing + 1;
+                    continue;
+                }
+                else if (token == "</a>")
                 {
                     if (openTags.Count == 0 || openTags.Pop() != "a")
                     {

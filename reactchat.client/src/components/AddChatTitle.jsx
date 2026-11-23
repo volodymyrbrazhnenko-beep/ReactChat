@@ -64,8 +64,8 @@ function AddChatTitle({ onCancel }) {
                         name="userName"
                         type="text"
                         maxLength="200"
-                        pattern="[A-Z][A-Za-z0-9]*"
-                        title="Start with a capital Latin letter, followed by Latin letters or digits only"
+                        pattern="[A-Z][A-Za-z0-9]*(?: [A-Z][A-Za-z0-9]*){0,2}"
+                        title="Enter one to three words, each starting with a capital Latin letter and containing only Latin letters or digits"
                         required
                     />
                 </div>
