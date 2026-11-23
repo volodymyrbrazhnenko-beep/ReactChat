@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { renderChatText } from './chatText';
 import Loading from './Loading';
 
 function ChatTitlesPage({ onAdd, onOpenChat }) {
@@ -143,7 +144,7 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                                             className="title-text"
                                             hidden={!expandedTitleIds.has(title.id)}
                                         >
-                                            {title.text}
+                                            {renderChatText(title.text)}
                                         </div>
                                     )}
                                 </td>

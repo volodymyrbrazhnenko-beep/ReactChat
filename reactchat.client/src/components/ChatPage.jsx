@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { renderChatText } from './chatText';
 import ChangeIcon from './ChangeIcon';
 import Loading from './Loading';
 
@@ -159,7 +160,7 @@ function ChatPage({ id, onBack, onAddMessage }) {
                                         </button>
                                     </div>
                                     <div className="chat-message-text">
-                                        {message.text}
+                                        {renderChatText(message.text)}
                                     </div>
                                 </td>
                             </tr>

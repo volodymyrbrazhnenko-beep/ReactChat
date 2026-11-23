@@ -19,6 +19,7 @@ namespace ReactChat.Server.Models
         [MaxLength(DomainConstants.TitleMaxLength)]
         public string Title { get; set; } = string.Empty;
 
+        [AllowedChatText]
         public string? Text { get; set; }
     }
 }

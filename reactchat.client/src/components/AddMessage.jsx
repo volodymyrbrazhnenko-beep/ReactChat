@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ChatTextEditor from './ChatTextEditor';
 
 function AddMessage({ parentId, onCancel }) {
     const [error, setError] = useState();
@@ -71,7 +72,7 @@ function AddMessage({ parentId, onCancel }) {
 
                 <div className="mb-3">
                     <label className="form-label" htmlFor="message-text">Text <span aria-hidden="true">*</span></label>
-                    <textarea className="form-control" id="message-text" name="text" rows="5" required />
+                    <ChatTextEditor id="message-text" name="text" rows="5" required />
                 </div>
 
                 {error && <div className="alert alert-danger" role="alert">Unable to add message: {error}</div>}

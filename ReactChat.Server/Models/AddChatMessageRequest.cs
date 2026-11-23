@@ -19,6 +19,7 @@ namespace ReactChat.Server.Models
         public string UserName { get; set; } = string.Empty;
 
         [Required]
+        [AllowedChatText]
         public string Text { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ChatTextEditor from './ChatTextEditor';
 
 function AddChatTitle({ onCancel }) {
     const [error, setError] = useState();
@@ -76,7 +77,7 @@ function AddChatTitle({ onCancel }) {
 
                 <div className="mb-3">
                     <label className="form-label" htmlFor="chat-title-text">Text</label>
-                    <textarea className="form-control" id="chat-title-text" name="text" rows="5" />
+                    <ChatTextEditor id="chat-title-text" name="text" rows="5" />
                 </div>
 
                 {error && <div className="alert alert-danger" role="alert">Unable to add chat title: {error}</div>}
