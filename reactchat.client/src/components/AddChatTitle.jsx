@@ -57,7 +57,16 @@ function AddChatTitle({ onCancel }) {
 
                 <div className="mb-3">
                     <label className="form-label" htmlFor="chat-title-user-name">User Name <span aria-hidden="true">*</span></label>
-                    <input className="form-control" id="chat-title-user-name" name="userName" type="text" maxLength="200" required />
+                    <input
+                        className="form-control"
+                        id="chat-title-user-name"
+                        name="userName"
+                        type="text"
+                        maxLength="200"
+                        pattern="[A-Z][A-Za-z0-9]*"
+                        title="Start with a capital Latin letter, followed by Latin letters or digits only"
+                        required
+                    />
                 </div>
 
                 <div className="mb-3">

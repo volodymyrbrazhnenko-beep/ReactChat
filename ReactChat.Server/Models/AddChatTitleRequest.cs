@@ -11,6 +11,7 @@ namespace ReactChat.Server.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression("^[A-Z][A-Za-z0-9]*$", ErrorMessage = "User Name must start with a capital Latin letter and contain only Latin letters or digits.")]
         [MaxLength(DomainConstants.UserNameMaxLength)]
         public string UserName { get; set; } = string.Empty;
 
