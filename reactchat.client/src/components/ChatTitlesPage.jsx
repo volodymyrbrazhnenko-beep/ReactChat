@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import Loading from './Loading';
 
 function ChatTitlesPage({ onAdd, onOpenChat }) {
@@ -122,13 +124,16 @@ function ChatTitlesPage({ onAdd, onOpenChat }) {
                                         {typeof title.text === 'string' && title.text.trim() !== '' && (
                                             <button
                                                 type="button"
-                                                className="btn btn-sm btn-outline-secondary title-text-toggle"
+                                                className="btn btn-sm title-text-toggle"
                                                 aria-label={`${expandedTitleIds.has(title.id) ? 'Hide' : 'Show'} text for ${title.title}`}
                                                 aria-expanded={expandedTitleIds.has(title.id)}
                                                 aria-controls={`chat-title-text-${title.id}`}
                                                 onClick={() => toggleTitleText(title.id)}
                                             >
-                                                <span aria-hidden="true">{expandedTitleIds.has(title.id) ? '▼' : '▶'}</span>
+                                                <FontAwesomeIcon
+                                                    icon={expandedTitleIds.has(title.id) ? faChevronDown : faChevronRight}
+                                                    aria-hidden="true"
+                                                />
                                             </button>
                                         )}
                                     </div>

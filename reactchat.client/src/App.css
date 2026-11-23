@@ -189,14 +189,15 @@ main {
     padding: 0.1rem 0.25rem;
     border: 0;
     border-radius: 4px;
-    color: var(--text-h);
+    color: #0d6efd;
     background: transparent;
     cursor: pointer;
 }
 
 .title-text-toggle:hover,
 .title-text-toggle:focus-visible {
-    background: var(--code-bg);
+    color: magenta;
+    background: transparent;
 }
 
 .title-text {
@@ -313,7 +314,7 @@ main {
 }
 
 .chat-add-message-button:hover {
-    color: #0a58ca;
+    color: magenta;
 }
 
 .chat-add-message-button:focus-visible {
