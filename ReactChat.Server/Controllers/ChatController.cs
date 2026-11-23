@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Buffers.Binary;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReactChat.Data.Repositories.ChatMessages.Views;
 using ReactChat.Server.Models;
@@ -13,6 +14,14 @@ namespace ReactChat.Server.Controllers
     public class ChatController : ControllerBase
     {
         private IChatService _chatService;
+
+        private static bool IsValidCustomerIcon(byte[] bytes)
+        {
+            ReadOnlySpan<byte> pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+            return bytes.AsSpan().StartsWith(pngSignature)
+                && BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(16, 4)) == 80
+                && BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4)) == 80;
+        }
 
         public ChatController(IChatService chatService)
         {
@@ -60,6 +69,43 @@ namespace ReactChat.Server.Controllers
             }
 
             return Ok(messages);
+        }
+
+        [HttpGet("CustomerIcon/{customerId:int}")]
+        public async Task<IActionResult> GetCustomerIcon(int customerId)
+        {
+            var icon = await _chatService.GetCustomerIconAsync(customerId);
+            return icon is null ? NotFound() : File(icon, "image/png");
+        }
+
+        [HttpPost("CustomerIcon/{customerId:int}")]
+        [RequestSizeLimit(2 * 1024 * 1024)]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadCustomerIcon(int customerId, [FromForm] IFormFile? icon)
+        {
+            const int maxIconSize = 1024 * 1024;
+            if (icon is null || icon.Length < 24 || icon.Length > maxIconSize)
+            {
+                return BadRequest("Upload a PNG image no larger than 1 MB.");
+            }
+
+            await using var stream = new MemoryStream();
+            await icon.CopyToAsync(stream);
+            var bytes = stream.ToArray();
+            if (!IsValidCustomerIcon(bytes))
+            {
+                return BadRequest("Customer icons must be PNG images sized 80 by 80 pixels.");
+            }
+
+            var updated = await _chatService.SetCustomerIconAsync(customerId, bytes);
+            return updated ? NoContent() : NotFound("Customer not found.");
+        }
+
+        [HttpDelete("CustomerIcon/{customerId:int}")]
+        public async Task<IActionResult> RemoveCustomerIcon(int customerId)
+        {
+            var updated = await _chatService.SetCustomerIconAsync(customerId, null);
+            return updated ? NoContent() : NotFound("Customer not found.");
         }
 
         [HttpPost("AddTitle")]

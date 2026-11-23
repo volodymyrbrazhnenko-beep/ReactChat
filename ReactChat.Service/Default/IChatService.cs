@@ -6,6 +6,8 @@ namespace ReactChat.Services
     {
         Task<TitlePageView> GetTitleViewsAsync(string sortBy, bool ascending, int pageNumber, int pageSize);
         Task<List<ChatMessageView>> GetChatMessagesAsync(int rootMessageId);
+        Task<byte[]?> GetCustomerIconAsync(int customerId);
+        Task<bool> SetCustomerIconAsync(int customerId, byte[]? icon);
         Task AddTitleAsync(string email, string userName, string title, string? text);
         Task<bool> AddMessageAsync(int parentMessageId, string email, string userName, string text);
     }

@@ -22,6 +22,26 @@ namespace ReactChat.Services
             return await _uow.ChatMessageRepository.GetChatMessagesAsync(rootMessageId);
         }
 
+        public async Task<byte[]?> GetCustomerIconAsync(int customerId)
+        {
+            var customer = await _uow.CustomerRepository.GetEntityAsync(customerId);
+            return customer?.Icon;
+        }
+
+        public async Task<bool> SetCustomerIconAsync(int customerId, byte[]? icon)
+        {
+            var customer = await _uow.CustomerRepository.GetEntityAsync(customerId);
+            if (customer is null)
+            {
+                return false;
+            }
+
+            customer.Icon = icon;
+            customer.IsIcon = icon is not null;
+            await _uow.CompleteAsync();
+            return true;
+        }
+
         public async Task AddTitleAsync(string email, string userName, string title, string? text)
         {
             email = email.Trim();

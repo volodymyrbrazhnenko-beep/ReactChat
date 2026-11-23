@@ -240,9 +240,64 @@ main {
     color:silver;
 }
 
+.chat-customer-icon {
+    display: inline-flex;
+    width: 80px;
+    height: 80px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #0d6efd;
+    background: transparent;
+    font-size: 2rem;
+    vertical-align: middle;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.chat-customer-icon img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.chat-customer-icon:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
 .chat-user {
     font-weight: bold;
     margin-right: 1rem;
+}
+
+.change-icon-backdrop {
+    position: fixed;
+    z-index: 1050;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 50%);
+}
+
+.change-icon-dialog {
+    width: min(100%, 32rem);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 20%);
+}
+
+.change-icon-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .chat-time {

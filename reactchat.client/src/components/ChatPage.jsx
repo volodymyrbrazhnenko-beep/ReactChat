@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faComments, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import ChangeIcon from './ChangeIcon';
 import Loading from './Loading';
 
 function orderMessages(messages, rootMessageId) {
@@ -47,6 +48,8 @@ function orderMessages(messages, rootMessageId) {
 function ChatPage({ id, onBack, onAddMessage }) {
     const [messages, setMessages] = useState();
     const [error, setError] = useState();
+    const [customerToChangeIcon, setCustomerToChangeIcon] = useState();
+    const [iconVersion, setIconVersion] = useState(0);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -104,6 +107,19 @@ function ChatPage({ id, onBack, onAddMessage }) {
                 <h1 className="h2 mb-0">Chat</h1>
                 <button type="button" className="btn btn-secondary" onClick={onBack}>Back to Chat Titles</button>
             </div>
+            {customerToChangeIcon && (
+                <ChangeIcon
+                    customerId={customerToChangeIcon.id}
+                    hasIcon={customerToChangeIcon.hasIcon}
+                    onClose={() => setCustomerToChangeIcon(undefined)}
+                    onChanged={hasIcon => {
+                        setMessages(currentMessages => currentMessages.map(message => (
+                            message.customerId === customerToChangeIcon.id ? { ...message, isIcon: hasIcon } : message
+                        )));
+                        setIconVersion(version => version + 1);
+                    }}
+                />
+            )}
             <div className="table-responsive">
                 <table className="table table-striped align-middle chat-message-grid">
                     <tbody>
@@ -114,6 +130,24 @@ function ChatPage({ id, onBack, onAddMessage }) {
                                         <span className="chat-id">
                                             {message.id}
                                         </span>
+                                        <button
+                                            type="button"
+                                            className="chat-customer-icon"
+                                            aria-label={`Change icon for ${message.userName}`}
+                                            title="Change customer icon"
+                                            onClick={() => setCustomerToChangeIcon({ id: message.customerId, hasIcon: message.isIcon })}
+                                        >
+                                            {message.isIcon ? (
+                                                <img
+                                                    src={`/api/chat/CustomerIcon/${message.customerId}?v=${iconVersion}`}
+                                                    alt=""
+                                                    width="80"
+                                                    height="80"
+                                                />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faComments} aria-hidden="true" />
+                                            )}
+                                        </button>
                                         <span className="chat-user">
                                             {message.userName}
                                         </span>
