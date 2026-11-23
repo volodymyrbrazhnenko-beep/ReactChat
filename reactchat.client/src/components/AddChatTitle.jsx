@@ -8,21 +8,29 @@ function AddChatTitle({ onCancel }) {
     async function handleSubmit(event) {
         event.preventDefault();
         setError(undefined);
-        setIsSubmitting(true);
 
         const formData = new FormData(event.currentTarget);
-        const title = {
-            email: formData.get('email').trim(),
-            userName: formData.get('userName').trim(),
-            title: formData.get('title').trim(),
-            text: formData.get('text') || null
-        };
+        const files = formData.getAll('files').filter(file => file instanceof File && file.name !== '');
+        if (files.length > 8) {
+            setError('A chat title can have at most 8 files.');
+            return;
+        }
+        if (files.some(file => file.name.toLowerCase().endsWith('.txt') && file.size > 100 * 1024)) {
+            setError('Text files must not exceed 100 KB.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        formData.set('email', formData.get('email').trim());
+        formData.set('userName', formData.get('userName').trim());
+        formData.set('title', formData.get('title').trim());
+        formData.set('text', formData.get('text') || '');
 
         try {
             const response = await fetch('/api/chat/AddTitle', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(title)
+                body: formData
             });
 
             if (!response.ok) {
@@ -31,7 +39,7 @@ function AddChatTitle({ onCancel }) {
                 if (errorBody) {
                     try {
                         const problem = JSON.parse(errorBody);
-                        message = problem.detail || problem.title || message;
+                        message = typeof problem === 'string' ? problem : problem.detail || problem.title || message;
                     } catch {
                         message = errorBody;
                     }
@@ -78,6 +86,11 @@ function AddChatTitle({ onCancel }) {
                 <div className="mb-3">
                     <label className="form-label" htmlFor="chat-title-text">Text</label>
                     <ChatTextEditor id="chat-title-text" name="text" rows="5" />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="chat-title-files">Files and pictures (up to 8; .txt up to 100 KB; images scaled to fit 320 × 240)</label>
+                    <input className="form-control" id="chat-title-files" name="files" type="file" accept=".txt,.jpg,.gif,.png" multiple />
                 </div>
 
                 {error && <div className="alert alert-danger" role="alert">Unable to add chat title: {error}</div>}

@@ -162,6 +162,21 @@ function ChatPage({ id, onBack, onAddMessage }) {
                                     <div className="chat-message-text">
                                         {renderChatText(message.text)}
                                     </div>
+                                    {message.files?.length > 0 && (
+                                        <div className="chat-message-files" aria-label="Message attachments">
+                                            {message.files.map(file => (
+                                                <div key={file.name} className="chat-message-file">
+                                                    {file.isImage ? (
+                                                        <a href={file.url} target="_blank" rel="noreferrer" aria-label={`Open ${file.name}`}>
+                                                            <img src={file.url} alt={file.name} loading="lazy" />
+                                                        </a>
+                                                    ) : (
+                                                        <a href={file.url} download={file.name}>{file.name}</a>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </td>
                             </tr>
                         ))}

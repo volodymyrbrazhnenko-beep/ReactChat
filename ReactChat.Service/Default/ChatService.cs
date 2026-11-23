@@ -42,7 +42,7 @@ namespace ReactChat.Services
             return true;
         }
 
-        public async Task AddTitleAsync(string email, string userName, string title, string? text)
+        public async Task<int> AddTitleAsync(string email, string userName, string title, string? text)
         {
             email = email.Trim();
             var customer = await _uow.CustomerRepository.GetCustomerByEmailAsync(email);
@@ -56,24 +56,26 @@ namespace ReactChat.Services
                 _uow.CustomerRepository.Add(customer);
             }
 
-            _uow.ChatMessageRepository.Add(new ChatMessage
+            var chatMessage = new ChatMessage
             {
                 CustomerId = customer.Id,
                 Customer = customer,
                 CreatedOnUtc = DateTime.UtcNow,
                 Title = title.Trim(),
                 Text = text ?? string.Empty
-            });
+            };
+            _uow.ChatMessageRepository.Add(chatMessage);
 
             await _uow.CompleteAsync();
+            return chatMessage.Id;
         }
 
-        public async Task<bool> AddMessageAsync(int parentMessageId, string email, string userName, string text)
+        public async Task<int?> AddMessageAsync(int parentMessageId, string email, string userName, string text)
         {
             var parentMessage = await _uow.ChatMessageRepository.GetEntityAsync(parentMessageId);
             if (parentMessage is null)
             {
-                return false;
+                return null;
             }
 
             email = email.Trim();
@@ -88,7 +90,7 @@ namespace ReactChat.Services
                 _uow.CustomerRepository.Add(customer);
             }
 
-            _uow.ChatMessageRepository.Add(new ChatMessage
+            var chatMessage = new ChatMessage
             {
                 CustomerId = customer.Id,
                 Customer = customer,
@@ -97,10 +99,11 @@ namespace ReactChat.Services
                 RootMessageId = parentMessage.RootMessageId ?? parentMessage.Id,
                 CreatedOnUtc = DateTime.UtcNow,
                 Text = text
-            });
+            };
+            _uow.ChatMessageRepository.Add(chatMessage);
 
             await _uow.CompleteAsync();
-            return true;
+            return chatMessage.Id;
         }
 
     }

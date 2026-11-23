@@ -235,6 +235,24 @@ main {
     white-space: pre-wrap;
 }
 
+.chat-message-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.chat-message-file img {
+    display: block;
+    max-width: 320px;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+.chat-message-file a {
+    overflow-wrap: anywhere;
+}
+
 .chat-id{
     width: 100px;
     margin-right: 1rem;

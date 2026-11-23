@@ -8,21 +8,29 @@ function AddMessage({ parentId, onCancel }) {
     async function handleSubmit(event) {
         event.preventDefault();
         setError(undefined);
-        setIsSubmitting(true);
 
         const formData = new FormData(event.currentTarget);
-        const message = {
-            parentMessageId: Number(parentId),
-            email: formData.get('email').trim(),
-            userName: formData.get('userName').trim(),
-            text: formData.get('text').trim()
-        };
+        const files = formData.getAll('files').filter(file => file instanceof File && file.name !== '');
+        if (files.length > 8) {
+            setError('A message can have at most 8 files.');
+            return;
+        }
+        if (files.some(file => file.name.toLowerCase().endsWith('.txt') && file.size > 100 * 1024)) {
+            setError('Text files must not exceed 100 KB.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        formData.set('parentMessageId', String(Number(parentId)));
+        formData.set('email', formData.get('email').trim());
+        formData.set('userName', formData.get('userName').trim());
+        formData.set('text', formData.get('text').trim());
 
         try {
             const response = await fetch('/api/chat/AddMessage', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(message)
+                body: formData
             });
 
             if (!response.ok) {
@@ -31,7 +39,7 @@ function AddMessage({ parentId, onCancel }) {
                 if (errorBody) {
                     try {
                         const problem = JSON.parse(errorBody);
-                        message = problem.detail || problem.title || message;
+                        message = typeof problem === 'string' ? problem : problem.detail || problem.title || message;
                     } catch {
                         message = errorBody;
                     }
@@ -73,6 +81,11 @@ function AddMessage({ parentId, onCancel }) {
                 <div className="mb-3">
                     <label className="form-label" htmlFor="message-text">Text <span aria-hidden="true">*</span></label>
                     <ChatTextEditor id="message-text" name="text" rows="5" required />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label" htmlFor="message-files">Files and pictures (up to 8; .txt up to 100 KB; images scaled to fit 320 × 240)</label>
+                    <input className="form-control" id="message-files" name="files" type="file" accept=".txt,.jpg,.gif,.png" multiple />
                 </div>
 
                 {error && <div className="alert alert-danger" role="alert">Unable to add message: {error}</div>}

@@ -11,5 +11,6 @@
         public required string UserName { get; set; }
         public required string Email { get; set; }
         public bool IsIcon { get; set; }
+        public List<ChatFileView> Files { get; set; } = [];
     }
 }

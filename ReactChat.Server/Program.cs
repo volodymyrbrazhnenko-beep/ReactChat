@@ -1,9 +1,11 @@
 using ReactChat.Server.DependencyInjection;
+using ReactChat.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IChatFileStore, ChatFileStore>();
 
 // Register ApplicationDbContext via extension (reads "DefaultConnection" from appsettings.json)
 builder.Services.AddApplicationDbContext(builder.Configuration);

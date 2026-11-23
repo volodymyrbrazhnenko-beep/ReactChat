@@ -21,5 +21,7 @@ namespace ReactChat.Server.Models
 
         [AllowedChatText]
         public string? Text { get; set; }
+
+        public List<IFormFile> Files { get; set; } = [];
     }
 }

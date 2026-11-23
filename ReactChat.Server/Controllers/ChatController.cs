@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ReactChat.Data.Repositories.ChatMessages.Views;
 using ReactChat.Server.Models;
+using ReactChat.Server.Services;
 using ReactChat.Services;
 
 namespace ReactChat.Server.Controllers
@@ -13,7 +14,8 @@ namespace ReactChat.Server.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private IChatService _chatService;
+        private readonly IChatService _chatService;
+        private readonly IChatFileStore _chatFileStore;
 
         private static bool IsValidCustomerIcon(byte[] bytes)
         {
@@ -23,9 +25,10 @@ namespace ReactChat.Server.Controllers
                 && BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4)) == 80;
         }
 
-        public ChatController(IChatService chatService)
+        public ChatController(IChatService chatService, IChatFileStore chatFileStore)
         {
             _chatService = chatService;
+            _chatFileStore = chatFileStore;
         }
 
         [HttpGet("GetTitles", Name = "GetTitles")]
@@ -68,6 +71,11 @@ namespace ReactChat.Server.Controllers
                 return NotFound();
             }
 
+            foreach (var message in messages)
+            {
+                message.Files = _chatFileStore.GetFiles(message.Id).ToList();
+            }
+
             return Ok(messages);
         }
 
@@ -108,22 +116,73 @@ namespace ReactChat.Server.Controllers
             return updated ? NoContent() : NotFound("Customer not found.");
         }
 
-        [HttpPost("AddTitle")]
-        public async Task<IActionResult> AddTitle([FromBody] AddChatTitleRequest request)
+        [HttpGet("Files/{messageId:int}/{fileName}")]
+        public IActionResult GetChatFile(int messageId, string fileName)
         {
-            await _chatService.AddTitleAsync(request.Email, request.UserName, request.Title, request.Text);
+            var path = _chatFileStore.GetFilePath(messageId, fileName);
+            if (path is null)
+            {
+                return NotFound();
+            }
+
+            var contentType = Path.GetExtension(fileName).ToLowerInvariant() switch
+            {
+                ".txt" => "text/plain",
+                ".jpg" => "image/jpeg",
+                ".gif" => "image/gif",
+                ".png" => "image/png",
+                _ => "application/octet-stream"
+            };
+            return PhysicalFile(path, contentType);
+        }
+
+        [HttpPost("AddTitle")]
+        [RequestSizeLimit(64 * 1024 * 1024)]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddTitle([FromForm] AddChatTitleRequest request)
+        {
+            IReadOnlyList<PreparedChatFile> files;
+            try
+            {
+                files = await _chatFileStore.PrepareAsync(request.Files, HttpContext.RequestAborted);
+            }
+            catch (ChatFileValidationException exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
+            var messageId = await _chatService.AddTitleAsync(request.Email, request.UserName, request.Title, request.Text);
+            await _chatFileStore.SaveAsync(messageId, files, HttpContext.RequestAborted);
             return NoContent();
         }
 
         [HttpPost("AddMessage")]
-        public async Task<IActionResult> AddMessage([FromBody] AddChatMessageRequest request)
+        [RequestSizeLimit(64 * 1024 * 1024)]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddMessage([FromForm] AddChatMessageRequest request)
         {
-            var added = await _chatService.AddMessageAsync(
+            IReadOnlyList<PreparedChatFile> files;
+            try
+            {
+                files = await _chatFileStore.PrepareAsync(request.Files, HttpContext.RequestAborted);
+            }
+            catch (ChatFileValidationException exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
+            var messageId = await _chatService.AddMessageAsync(
                 request.ParentMessageId,
                 request.Email,
                 request.UserName,
                 request.Text);
-            return added ? NoContent() : NotFound("Parent message not found.");
+            if (messageId is null)
+            {
+                return NotFound("Parent message not found.");
+            }
+
+            await _chatFileStore.SaveAsync(messageId.Value, files, HttpContext.RequestAborted);
+            return NoContent();
         }
     }
 }
