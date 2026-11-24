@@ -3,12 +3,12 @@ import AddChatTitle from './components/AddChatTitle';
 import AddMessage from './components/AddMessage';
 import ChatTitlesPage from './components/ChatTitlesPage';
 import ChatPage from './components/ChatPage';
-import WeatherPage from './components/WeatherPage';
+import AboutPage from './components/AboutPage';
 import './App.css';
 
 function pageForPath(path) {
-    if (path === '/weather') {
-        return 'weather';
+    if (path === '/about') {
+        return 'about';
     }
 
     if (path === '/add-chat-title') {
@@ -50,8 +50,8 @@ function App() {
 
     function navigate(event, page, id, parentMessageId) {
         event?.preventDefault();
-        const path = page === 'weather'
-            ? '/weather'
+        const path = page === 'about'
+            ? '/about'
             : page === 'addChatTitle'
                 ? '/add-chat-title'
                 : page === 'addMessage'
@@ -76,18 +76,18 @@ function App() {
                     </a>
                     <div className="navbar-nav">
                         <a
-                            className={`nav-link ${activePage !== 'weather' ? 'active' : ''}`}
+                            className={`nav-link ${['chatTitles', 'chat', 'addChatTitle', 'addMessage'].includes(activePage) ? 'active' : ''}`}
                             href="/chat-titles"
                             onClick={event => navigate(event, 'chatTitles')}
                         >
                             Chat Titles
                         </a>
                         <a
-                            className={`nav-link ${activePage === 'weather' ? 'active' : ''}`}
-                            href="/weather"
-                            onClick={event => navigate(event, 'weather')}
+                            className={`nav-link ${activePage === 'about' ? 'active' : ''}`}
+                            href="/about"
+                            onClick={event => navigate(event, 'about')}
                         >
-                            Weather
+                            About
                         </a>
                     </div>
                 </div>
@@ -113,7 +113,7 @@ function App() {
                     />
                 )}
                 {activePage === 'addChatTitle' && <AddChatTitle onCancel={() => navigate(null, 'chatTitles')} />}
-                {activePage === 'weather' && <WeatherPage />}
+                {activePage === 'about' && <AboutPage />}
             </main>
         </div>
     );
