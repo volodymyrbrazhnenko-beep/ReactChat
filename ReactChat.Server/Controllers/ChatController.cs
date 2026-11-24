@@ -127,7 +127,8 @@ namespace ReactChat.Server.Controllers
 
             var contentType = Path.GetExtension(fileName).ToLowerInvariant() switch
             {
-                ".txt" => "text/plain",
+                ".txt" or ".cs" or ".c" or ".css" or ".js" or ".jsx" or ".json" or ".http" or ".cshttp" or ".sql" => "text/plain",
+                ".php" => "application/x-httpd-php",
                 ".jpg" => "image/jpeg",
                 ".gif" => "image/gif",
                 ".png" => "image/png",

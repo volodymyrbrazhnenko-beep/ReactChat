@@ -4,6 +4,7 @@ import { faComments, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { renderChatText } from './chatText';
 import ChangeIcon from './ChangeIcon';
 import Loading from './Loading';
+import CodeFilePreview, { isCodeFile } from './CodeFilePreview';
 
 function orderMessages(messages, rootMessageId) {
     const childrenByParentId = new Map();
@@ -170,6 +171,8 @@ function ChatPage({ id, onBack, onAddMessage }) {
                                                         <a href={file.url} target="_blank" rel="noreferrer" aria-label={`Open ${file.name}`}>
                                                             <img src={file.url} alt={file.name} loading="lazy" />
                                                         </a>
+                                                    ) : isCodeFile(file.name) ? (
+                                                        <CodeFilePreview file={file} />
                                                     ) : (
                                                         <a href={file.url} download={file.name}>{file.name}</a>
                                                     )}

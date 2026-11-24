@@ -256,8 +256,67 @@ main {
     border-color: #0d6efd;
 }
 
-.chat-message-file a {
-    overflow-wrap: anywhere;
+ .chat-message-file a {
+     overflow-wrap: anywhere;
+ }
+
+ .chat-code-file {
+    width: min(640px, 70vw);
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.chat-code-file-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #ced4da;
+    background: #f8f9fa;
+}
+
+.chat-code-preview {
+    max-height: 360px;
+    overflow: auto;
+    padding: 0.75rem;
+    background: #fff;
+    color: #212529;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.chat-code-preview code {
+    font-family: inherit;
+}
+
+.chat-code-loading {
+    padding: 0.75rem;
+    font-family: Consolas, 'Courier New', monospace;
+}
+
+.chat-code-preview .code-keyword {
+    color: #0000ff;
+    font-weight: 600;
+}
+
+.chat-code-preview .code-string {
+    color: #a31515;
+}
+
+.chat-code-preview .code-comment {
+    color: #008000;
+    font-style: italic;
+}
+
+.chat-code-preview .code-number {
+    color: #098658;
+}
+
+.chat-code-preview .code-tag {
+    color: #800000;
 }
 
 .chat-id{

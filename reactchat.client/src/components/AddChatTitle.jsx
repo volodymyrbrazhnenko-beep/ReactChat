@@ -15,8 +15,9 @@ function AddChatTitle({ onCancel }) {
             setError('A chat title can have at most 8 files.');
             return;
         }
-        if (files.some(file => file.name.toLowerCase().endsWith('.txt') && file.size > 100 * 1024)) {
-            setError('Text files must not exceed 100 KB.');
+        const textExtensions = ['.txt', '.php', '.cs', '.c', '.css', '.js', '.jsx', '.json', '.http', '.cshttp', '.sql'];
+        if (files.some(file => textExtensions.some(extension => file.name.toLowerCase().endsWith(extension)) && file.size > 100 * 1024)) {
+            setError('Text and code files must not exceed 100 KB.');
             return;
         }
 
@@ -89,8 +90,8 @@ function AddChatTitle({ onCancel }) {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label" htmlFor="chat-title-files">Files and pictures (up to 8; .txt up to 100 KB; images scaled to fit 320 × 240)</label>
-                    <input className="form-control" id="chat-title-files" name="files" type="file" accept=".txt,.jpg,.gif,.png" multiple />
+                    <label className="form-label" htmlFor="chat-title-files">Files and pictures (up to 8; text and code files up to 100 KB; images scaled to fit 320 × 240)</label>
+                    <input className="form-control" id="chat-title-files" name="files" type="file" accept=".txt,.php,.cs,.c,.css,.js,.jsx,.json,.http,.cshttp,.sql,.jpg,.gif,.png" multiple />
                 </div>
 
                 {error && <div className="alert alert-danger" role="alert">Unable to add chat title: {error}</div>}

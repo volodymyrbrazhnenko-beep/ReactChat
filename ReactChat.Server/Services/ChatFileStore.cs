@@ -37,22 +37,22 @@ namespace ReactChat.Server.Services
                 }
 
                 var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                if (extension == ".txt")
+                if (IsTextExtension(extension))
                 {
                     if (file.Length > MaxTextFileSize)
                     {
-                        throw new ChatFileValidationException("Text files must not exceed 100 KB.");
+                        throw new ChatFileValidationException("Text and code files must not exceed 100 KB.");
                     }
 
                     await using var textStream = new MemoryStream();
                     await file.CopyToAsync(textStream, cancellationToken);
-                    preparedFiles.Add(CreatePreparedFile(".txt", "text/plain", textStream.ToArray(), false));
+                    preparedFiles.Add(CreatePreparedFile(extension, GetTextContentType(extension), textStream.ToArray(), false));
                     continue;
                 }
 
                 if (extension is not (".jpg" or ".gif" or ".png"))
                 {
-                    throw new ChatFileValidationException("Only .txt, .jpg, .gif, and .png files are allowed.");
+                    throw new ChatFileValidationException("Only .txt, .php, .cs, .c, .css, .js, .jsx, .json, .http, .cshttp, .sql, .jpg, .gif, and .png files are allowed.");
                 }
 
                 await using var uploadedImage = new MemoryStream();
@@ -182,7 +182,18 @@ namespace ReactChat.Server.Services
             IsImage = isImage
         };
 
-        private static bool IsAllowedExtension(string extension) => extension.ToLowerInvariant() is ".txt" or ".jpg" or ".gif" or ".png";
+        private static bool IsAllowedExtension(string extension) => IsTextExtension(extension) || IsImageExtension(extension);
+
+        private static bool IsTextExtension(string extension) => extension.ToLowerInvariant() is
+            ".txt" or ".php" or ".cs" or ".c" or ".css" or ".js" or ".jsx" or
+            ".json" or ".http" or ".cshttp" or ".sql";
+
+        private static string GetTextContentType(string extension) => extension.ToLowerInvariant() switch
+        {
+            ".php" => "application/x-httpd-php",
+            ".cs" or ".c" or ".css" or ".js" or ".jsx" or ".json" or ".http" or ".cshttp" or ".sql" => "text/plain",
+            _ => "text/plain"
+        };
 
         private static bool IsImageExtension(string extension) => extension.ToLowerInvariant() is ".jpg" or ".gif" or ".png";
     }
