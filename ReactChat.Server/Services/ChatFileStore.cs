@@ -29,6 +29,7 @@ namespace ReactChat.Server.Services
             }
 
             var preparedFiles = new List<PreparedChatFile>(files.Count);
+            var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var file in files)
             {
                 if (file.Length == 0)
@@ -36,7 +37,13 @@ namespace ReactChat.Server.Services
                     throw new ChatFileValidationException("Empty files cannot be uploaded.");
                 }
 
-                var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                var originalName = GetSafeOriginalFileName(file.FileName);
+                if (!usedNames.Add(originalName))
+                {
+                    throw new ChatFileValidationException($"Multiple files named '{originalName}' cannot be uploaded in one message.");
+                }
+
+                var extension = Path.GetExtension(originalName).ToLowerInvariant();
                 if (IsTextExtension(extension))
                 {
                     if (file.Length > MaxTextFileSize)
@@ -46,7 +53,7 @@ namespace ReactChat.Server.Services
 
                     await using var textStream = new MemoryStream();
                     await file.CopyToAsync(textStream, cancellationToken);
-                    preparedFiles.Add(CreatePreparedFile(extension, GetTextContentType(extension), textStream.ToArray(), false));
+                    preparedFiles.Add(CreatePreparedFile(originalName, GetTextContentType(extension), textStream.ToArray(), false));
                     continue;
                 }
 
@@ -97,7 +104,7 @@ namespace ReactChat.Server.Services
                     await using var resizedImage = new MemoryStream();
                     await image.SaveAsync(resizedImage, format, cancellationToken);
                     preparedFiles.Add(CreatePreparedFile(
-                        extension,
+                        originalName,
                         extension switch
                         {
                             ".jpg" => "image/jpeg",
@@ -162,7 +169,7 @@ namespace ReactChat.Server.Services
         {
             if (string.IsNullOrWhiteSpace(fileName)
                 || !string.Equals(Path.GetFileName(fileName), fileName, StringComparison.Ordinal)
-                || !Guid.TryParse(Path.GetFileNameWithoutExtension(fileName), out _)
+                || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
                 || !IsAllowedExtension(Path.GetExtension(fileName)))
             {
                 return null;
@@ -174,13 +181,32 @@ namespace ReactChat.Server.Services
 
         private string GetMessageDirectory(int messageId) => Path.Combine(_chatDirectory, messageId.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-        private static PreparedChatFile CreatePreparedFile(string extension, string contentType, byte[] content, bool isImage) => new()
+        private static PreparedChatFile CreatePreparedFile(string originalName, string contentType, byte[] content, bool isImage) => new()
         {
-            Name = $"{Guid.NewGuid():N}{extension}",
+            Name = originalName,
             ContentType = contentType,
             Content = content,
             IsImage = isImage
         };
+
+        private static string GetSafeOriginalFileName(string? fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ChatFileValidationException("An uploaded file must have a name.");
+            }
+
+            var originalName = Path.GetFileName(fileName);
+            if (string.IsNullOrWhiteSpace(originalName)
+                || originalName is "." or ".."
+                || originalName.Length > 255
+                || originalName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            {
+                throw new ChatFileValidationException("An uploaded file has an invalid name.");
+            }
+
+            return originalName;
+        }
 
         private static bool IsAllowedExtension(string extension) => IsTextExtension(extension) || IsImageExtension(extension);
 
