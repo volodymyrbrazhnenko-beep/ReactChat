@@ -1,7 +1,6 @@
 <Solution>
   <Project Path="reactchat.client/reactchat.client.esproj">
     <Build />
-    <Deploy />
   </Project>
   <Project Path="ReactChat.Data/ReactChat.Data.csproj" Id="f3d5a546-d494-425a-ab21-f244bb89b81f" />
   <Project Path="ReactChat.Domain/ReactChat.Domain.csproj" Id="ffec7196-422b-4d70-8548-c1e403b24090" />
