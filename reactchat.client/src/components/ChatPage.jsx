@@ -106,7 +106,7 @@ function ChatPage({ id, onBack, onAddMessage }) {
     return (
         <div className="page">
             <div className="d-flex align-items-center justify-content-between gap-3 mb-4">
-                <h1 className="h2 mb-0">Chat</h1>
+                <h2 className="h2 mb-0">{messages[0].title}</h2>
                 <button type="button" className="btn btn-secondary" onClick={onBack}>Back to Chat Titles</button>
             </div>
             {customerToChangeIcon && (

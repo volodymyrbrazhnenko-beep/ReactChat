@@ -6,8 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SpaRoot>..\reactchat.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:1909</SpaProxyServerUrl>
+    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+    <UserSecretsId>6acdb7ad-f331-4c46-aa74-183956d5bab4</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Chat\**" />
+    <Content Remove="Chat\**" />
+    <EmbeddedResource Remove="Chat\**" />
+    <None Remove="Chat\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
