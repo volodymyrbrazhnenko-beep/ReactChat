@@ -18,53 +18,31 @@ namespace ReactChat.Data
 
         private static string GetConnectionString()
         {
-            var environmentConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-            if (!string.IsNullOrWhiteSpace(environmentConnectionString))
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var settingsFiles = new[]
             {
-                return environmentConnectionString;
+                Path.Combine(currentDirectory, "ReactChat.Server", "appsettings.json"),
+                Path.Combine(currentDirectory, "appsettings.json")
+            };
+
+            var settingsFile = settingsFiles.FirstOrDefault(File.Exists);
+            if (settingsFile is null)
+            {
+                throw new InvalidOperationException(
+                    "Could not find ReactChat.Server/appsettings.json.");
             }
 
-            var searchDirectories = new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory }
-                .SelectMany(GetAncestorDirectories)
-                .Distinct(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var directory in searchDirectories)
+            using var document = JsonDocument.Parse(File.ReadAllText(settingsFile));
+            if (document.RootElement.TryGetProperty("ConnectionStrings", out var connectionStrings)
+                && connectionStrings.TryGetProperty("DefaultConnection", out var value)
+                && !string.IsNullOrWhiteSpace(value.GetString()))
             {
-                var settingsFiles = new[]
-                {
-                    Path.Combine(directory, "appsettings.json"),
-                    Path.Combine(directory, "ReactChat.Server", "appsettings.json")
-                };
-
-                foreach (var settingsFile in settingsFiles)
-                {
-                    if (!File.Exists(settingsFile))
-                    {
-                        continue;
-                    }
-
-                    using var document = JsonDocument.Parse(File.ReadAllText(settingsFile));
-                    if (document.RootElement.TryGetProperty("ConnectionStrings", out var connectionStrings)
-                        && connectionStrings.TryGetProperty("DefaultConnection", out var value)
-                        && !string.IsNullOrWhiteSpace(value.GetString()))
-                    {
-                        return value.GetString()!;
-                    }
-                }
+                return value.GetString()!;
             }
 
             throw new InvalidOperationException(
-                "Could not find ConnectionStrings:DefaultConnection. Set the ConnectionStrings__DefaultConnection environment variable or ensure ReactChat.Server/appsettings.json is available.");
+                "ConnectionStrings:DefaultConnection is missing or empty in ReactChat.Server/appsettings.json.");
         }
 
-        private static IEnumerable<string> GetAncestorDirectories(string path)
-        {
-            var directory = new DirectoryInfo(path);
-            while (directory is not null)
-            {
-                yield return directory.FullName;
-                directory = directory.Parent;
-            }
-        }
     }
 }

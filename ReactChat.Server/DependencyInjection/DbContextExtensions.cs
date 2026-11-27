@@ -8,6 +8,12 @@ namespace ReactChat.Server.DependencyInjection
         public static IServiceCollection AddApplicationDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Set ConnectionStrings:DefaultConnection to configure the database.");
+            }
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;

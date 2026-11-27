@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${DB_SERVER_PASSWORD:?Set DB_SERVER_PASSWORD in .env}
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 8080
+      DB_SERVER_LOGIN: ${DB_SERVER_LOGIN:?Set DB_SERVER_LOGIN in .env}
+      DB_SERVER_PASSWORD: ${DB_SERVER_PASSWORD:?Set DB_SERVER_PASSWORD in .env}
+      DB_CONNECTION_STRING: "${DB_CONNECTION_STRING:-Server=db;Database=ReactChat;User Id=${DB_SERVER_LOGIN};Password=${DB_SERVER_PASSWORD};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True}"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sqlserver-data:
