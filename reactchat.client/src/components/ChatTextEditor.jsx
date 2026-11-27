@@ -3,8 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faBold, faCode, faItalic, faLink } from '@fortawesome/free-solid-svg-icons';
 import { isValidChatText } from './chatText';
 
-function ChatTextEditor({ id, name, rows, required = false }) {
-    const [value, setValue] = useState('');
+function ChatTextEditor({ id, name, rows, required = false, value: controlledValue, onChange }) {
+    const [internalValue, setInternalValue] = useState('');
+    const value = controlledValue === undefined ? internalValue : controlledValue;
     const selectionRef = useRef();
     const textareaRef = useRef(null);
 
@@ -31,7 +32,12 @@ function ChatTextEditor({ id, name, rows, required = false }) {
             const nextValue = `${value.slice(0, start)}<br />${value.slice(end)}`;
             const cursorPosition = start + '<br />'.length;
             selectionRef.current = { start: cursorPosition, end: cursorPosition };
-            setValue(nextValue);
+            if (controlledValue === undefined) {
+                setInternalValue(nextValue);
+            }
+            if (onChange) {
+                onChange(nextValue);
+            }
             return;
         }
 
@@ -45,13 +51,23 @@ function ChatTextEditor({ id, name, rows, required = false }) {
         const contentStart = start + openingTag.length;
 
         selectionRef.current = { start: contentStart, end: contentStart + selectedText.length };
-        setValue(nextValue);
+        if (controlledValue === undefined) {
+            setInternalValue(nextValue);
+        }
+        if (onChange) {
+            onChange(nextValue);
+        }
     }
 
     function handleChange(event) {
         const nextValue = event.currentTarget.value;
         event.currentTarget.setCustomValidity(isValidChatText(nextValue) ? '' : 'Use only links, code, italic, bold, and line-break tags with matching opening and closing tags.');
-        setValue(nextValue);
+        if (controlledValue === undefined) {
+            setInternalValue(nextValue);
+        }
+        if (onChange) {
+            onChange(nextValue);
+        }
     }
 
     const isInvalid = !isValidChatText(value);

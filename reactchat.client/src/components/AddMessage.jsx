@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import ChatTextEditor from './ChatTextEditor';
+import { renderChatText } from './chatText';
 
 function AddMessage({ parentId, onCancel }) {
     const [error, setError] = useState();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [text, setText] = useState('');
+    const [previewText, setPreviewText] = useState();
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -95,7 +98,14 @@ function AddMessage({ parentId, onCancel }) {
 
                 <div className="mb-3">
                     <label className="form-label" htmlFor="message-text">Text {!isRootMessage && <span aria-hidden="true">*</span>}</label>
-                    <ChatTextEditor id="message-text" name="text" rows="5" required={!isRootMessage} />
+                    <ChatTextEditor
+                        id="message-text"
+                        name="text"
+                        rows="5"
+                        required={!isRootMessage}
+                        value={text}
+                        onChange={setText}
+                    />
                 </div>
 
                 <div className="mb-3">
@@ -108,10 +118,21 @@ function AddMessage({ parentId, onCancel }) {
                     <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
+                    <button type="button" className="btn btn-secondary" onClick={() => setPreviewText(text)}>
+                        Preview
+                    </button>
                     <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
                         Cancel
                     </button>
                 </div>
+                {previewText !== undefined && (
+                    <div className="card mt-3" aria-live="polite">
+                        <div className="card-header">Preview</div>
+                        <div className="card-body chat-message-text">
+                            {renderChatText(previewText)}
+                        </div>
+                    </div>
+                )}
             </form>
         </section>
     );
