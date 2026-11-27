@@ -83,8 +83,8 @@ namespace ReactChat.Data.Repositories.ChatMessages
 
             var replies = await Source
                 .Where(item => item.RootMessageId == rootMessageId)
-                .OrderBy(item => item.CreatedOnUtc)
-                .ThenBy(item => item.Id)
+                .OrderByDescending(item => item.CreatedOnUtc)
+                .ThenByDescending(item => item.Id)
                 .Select(item => new ChatMessageView
                 {
                     Id = item.Id,
