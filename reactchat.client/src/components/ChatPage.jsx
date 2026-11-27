@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { renderChatText } from './chatText';
@@ -6,24 +7,39 @@ import ChangeIcon from './ChangeIcon';
 import Loading from './Loading';
 import CodeFilePreview, { isCodeFile } from './CodeFilePreview';
 
+function mergeMessages(currentMessages, incomingMessages) {
+    const messagesById = new Map((currentMessages ?? []).map(message => [message.id, message]));
+    incomingMessages.forEach(message => messagesById.set(message.id, message));
+
+    return [...messagesById.values()].sort((first, second) => {
+        if (first.parentMessageId == null) return second.parentMessageId == null ? 0 : -1;
+        if (second.parentMessageId == null) return 1;
+        return new Date(second.createdOnUtc) - new Date(first.createdOnUtc) || second.id - first.id;
+    });
+}
+
 function ChatPage({ id, onBack, onAddMessage }) {
-    const [messages, setMessages] = useState();
-    const [error, setError] = useState();
+    const [chatState, setChatState] = useState(() => ({ id, messages: undefined, error: undefined }));
     const [customerToChangeIcon, setCustomerToChangeIcon] = useState();
     const [iconVersion, setIconVersion] = useState(0);
+    const messages = chatState.id === id ? chatState.messages : undefined;
+    const error = !id || !/^\d+$/.test(id)
+        ? 'Invalid chat ID.'
+        : chatState.id === id ? chatState.error : undefined;
 
     useEffect(() => {
         const controller = new AbortController();
+        let isActive = true;
+        let connection;
+
+        if (!id || !/^\d+$/.test(id)) {
+            return () => {
+                isActive = false;
+                controller.abort();
+            };
+        }
 
         async function loadMessages() {
-            setMessages(undefined);
-            setError(undefined);
-
-            if (!id || !/^\d+$/.test(id)) {
-                setError('Invalid chat ID.');
-                return;
-            }
-
             try {
                 const response = await fetch(`/api/chat/GetMessages/${encodeURIComponent(id)}`, {
                     signal: controller.signal
@@ -35,16 +51,75 @@ function ChatPage({ id, onBack, onAddMessage }) {
                     throw new Error(`Request failed with status ${response.status}`);
                 }
 
-                setMessages(await response.json());
+                const loadedMessages = await response.json();
+                if (isActive) {
+                    setChatState(current => ({
+                        id,
+                        messages: mergeMessages(current.id === id ? current.messages : undefined, loadedMessages),
+                        error: undefined
+                    }));
+                }
             } catch (requestError) {
-                if (!controller.signal.aborted) {
-                    setError(requestError.message);
+                if (isActive && !controller.signal.aborted) {
+                    setChatState({ id, messages: undefined, error: requestError.message });
                 }
             }
         }
 
-        loadMessages();
-        return () => controller.abort();
+        async function connectToChat() {
+            connection = new HubConnectionBuilder()
+                .withUrl('/hubs/chat')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('MessageAdded', message => {
+                if (isActive) {
+                    setChatState(current => ({
+                        id,
+                        messages: mergeMessages(current.id === id ? current.messages : undefined, [message]),
+                        error: undefined
+                    }));
+                }
+            });
+            connection.onreconnected(async () => {
+                if (!isActive) return;
+
+                try {
+                    await connection.invoke('JoinChat', Number(id));
+                } catch (connectionError) {
+                    console.error('Unable to rejoin the chat after reconnecting.', connectionError);
+                }
+            });
+
+            try {
+                await connection.start();
+                if (isActive) {
+                    await connection.invoke('JoinChat', Number(id));
+                }
+            } catch (connectionError) {
+                if (isActive) {
+                    console.error('Unable to connect to live chat updates.', connectionError);
+                }
+            }
+        }
+
+        async function initialize() {
+            await connectToChat();
+            if (isActive) {
+                await loadMessages();
+            }
+        }
+
+        initialize();
+        return () => {
+            isActive = false;
+            controller.abort();
+            if (connection) {
+                connection.stop().catch(connectionError => {
+                    console.error('Unable to stop the live chat connection.', connectionError);
+                });
+            }
+        };
     }, [id]);
 
     if (error) {
@@ -56,7 +131,7 @@ function ChatPage({ id, onBack, onAddMessage }) {
         );
     }
 
-    if (!messages) {
+    if (!messages || messages[0]?.id !== Number(id)) {
         return <Loading message="Loading chat..." />;
     }
 
@@ -72,9 +147,12 @@ function ChatPage({ id, onBack, onAddMessage }) {
                     hasIcon={customerToChangeIcon.hasIcon}
                     onClose={() => setCustomerToChangeIcon(undefined)}
                     onChanged={hasIcon => {
-                        setMessages(currentMessages => currentMessages.map(message => (
-                            message.customerId === customerToChangeIcon.id ? { ...message, isIcon: hasIcon } : message
-                        )));
+                        setChatState(current => current.id !== id || !current.messages ? current : {
+                            ...current,
+                            messages: current.messages.map(message => (
+                                message.customerId === customerToChangeIcon.id ? { ...message, isIcon: hasIcon } : message
+                            ))
+                        });
                         setIconVersion(version => version + 1);
                     }}
                 />

@@ -70,7 +70,7 @@ namespace ReactChat.Services
             return chatMessage.Id;
         }
 
-        public async Task<int?> AddMessageAsync(int parentMessageId, string email, string userName, string text)
+        public async Task<(int MessageId, int RootMessageId)?> AddMessageAsync(int parentMessageId, string email, string userName, string text)
         {
             var parentMessage = await _uow.ChatMessageRepository.GetEntityAsync(parentMessageId);
             if (parentMessage is null)
@@ -103,7 +103,7 @@ namespace ReactChat.Services
             _uow.ChatMessageRepository.Add(chatMessage);
 
             await _uow.CompleteAsync();
-            return chatMessage.Id;
+            return (chatMessage.Id, chatMessage.RootMessageId.Value);
         }
 
     }

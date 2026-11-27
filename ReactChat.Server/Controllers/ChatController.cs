@@ -1,7 +1,9 @@
 ﻿using System.Buffers.Binary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using ReactChat.Data.Repositories.ChatMessages.Views;
+using ReactChat.Server.Hubs;
 using ReactChat.Server.Models;
 using ReactChat.Server.Services;
 using ReactChat.Services;
@@ -16,6 +18,7 @@ namespace ReactChat.Server.Controllers
     {
         private readonly IChatService _chatService;
         private readonly IChatFileStore _chatFileStore;
+        private readonly IHubContext<ChatHub> _hubContext;
 
         private static bool IsValidCustomerIcon(byte[] bytes)
         {
@@ -25,10 +28,14 @@ namespace ReactChat.Server.Controllers
                 && BinaryPrimitives.ReadInt32BigEndian(bytes.AsSpan(20, 4)) == 80;
         }
 
-        public ChatController(IChatService chatService, IChatFileStore chatFileStore)
+        public ChatController(
+            IChatService chatService,
+            IChatFileStore chatFileStore,
+            IHubContext<ChatHub> hubContext)
         {
             _chatService = chatService;
             _chatFileStore = chatFileStore;
+            _hubContext = hubContext;
         }
 
         [HttpGet("GetTitles", Name = "GetTitles")]
@@ -172,17 +179,27 @@ namespace ReactChat.Server.Controllers
                 return BadRequest(exception.Message);
             }
 
-            var messageId = await _chatService.AddMessageAsync(
+            var addedMessage = await _chatService.AddMessageAsync(
                 request.ParentMessageId,
                 request.Email,
                 request.UserName,
                 request.Text);
-            if (messageId is null)
+            if (addedMessage is null)
             {
                 return NotFound("Parent message not found.");
             }
 
-            await _chatFileStore.SaveAsync(messageId.Value, files, HttpContext.RequestAborted);
+            await _chatFileStore.SaveAsync(addedMessage.Value.MessageId, files, HttpContext.RequestAborted);
+            var messages = await _chatService.GetChatMessagesAsync(addedMessage.Value.RootMessageId);
+            foreach (var message in messages)
+            {
+                message.Files = _chatFileStore.GetFiles(message.Id).ToList();
+            }
+
+            var messageView = messages.Single(message => message.Id == addedMessage.Value.MessageId);
+            await _hubContext.Clients
+                .Group(ChatHub.GetGroupName(addedMessage.Value.RootMessageId))
+                .SendAsync("MessageAdded", messageView, HttpContext.RequestAborted);
             return NoContent();
         }
     }

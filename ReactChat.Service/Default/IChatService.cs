@@ -9,6 +9,6 @@ namespace ReactChat.Services
         Task<byte[]?> GetCustomerIconAsync(int customerId);
         Task<bool> SetCustomerIconAsync(int customerId, byte[]? icon);
         Task<int> AddTitleAsync(string email, string userName, string title, string? text);
-        Task<int?> AddMessageAsync(int parentMessageId, string email, string userName, string text);
+        Task<(int MessageId, int RootMessageId)?> AddMessageAsync(int parentMessageId, string email, string userName, string text);
     }
 }

@@ -1,10 +1,12 @@
 using ReactChat.Server.DependencyInjection;
+using ReactChat.Server.Hubs;
 using ReactChat.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<IChatFileStore, ChatFileStore>();
 
 // Register ApplicationDbContext via extension (reads "DefaultConnection" from appsettings.json)
@@ -44,6 +46,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapFallbackToFile("/index.html");
 
