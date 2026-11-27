@@ -1,5 +1,4 @@
 ﻿import { useEffect, useState } from 'react';
-import AddChatTitle from './components/AddChatTitle';
 import AddMessage from './components/AddMessage';
 import ChatTitlesPage from './components/ChatTitlesPage';
 import ChatPage from './components/ChatPage';
@@ -12,7 +11,7 @@ function pageForPath(path) {
     }
 
     if (path === '/add-chat-title') {
-        return 'addChatTitle';
+        return 'addMessage';
     }
 
     if (/^\/chat\/[^/]+\/add-message\/[^/]+\/?$/.test(path)) {
@@ -52,13 +51,13 @@ function App() {
         event?.preventDefault();
         const path = page === 'about'
             ? '/about'
-            : page === 'addChatTitle'
-                ? '/add-chat-title'
-                : page === 'addMessage'
-                    ? `/chat/${encodeURIComponent(id)}/add-message/${encodeURIComponent(parentMessageId)}`
-                    : page === 'chat'
-                        ? `/chat/${encodeURIComponent(id)}`
-                        : '/chat-titles';
+            : page === 'addMessage'
+                ? parentMessageId === null
+                    ? '/add-chat-title'
+                    : `/chat/${encodeURIComponent(id)}/add-message/${encodeURIComponent(parentMessageId)}`
+                : page === 'chat'
+                    ? `/chat/${encodeURIComponent(id)}`
+                    : '/chat-titles';
 
         if (window.location.pathname !== path) {
             window.history.pushState({}, '', path);
@@ -76,7 +75,7 @@ function App() {
                     </a>
                     <div className="navbar-nav">
                         <a
-                            className={`nav-link ${['chatTitles', 'chat', 'addChatTitle', 'addMessage'].includes(activePage) ? 'active' : ''}`}
+                            className={`nav-link ${['chatTitles', 'chat', 'addMessage'].includes(activePage) ? 'active' : ''}`}
                             href="/chat-titles"
                             onClick={event => navigate(event, 'chatTitles')}
                         >
@@ -95,7 +94,7 @@ function App() {
             <main className="container-fluid py-4">
                 {activePage === 'chatTitles' && (
                     <ChatTitlesPage
-                        onAdd={() => navigate(null, 'addChatTitle')}
+                        onAdd={() => navigate(null, 'addMessage', null, null)}
                         onOpenChat={id => navigate(null, 'chat', id)}
                     />
                 )}
@@ -109,10 +108,11 @@ function App() {
                 {activePage === 'addMessage' && (
                     <AddMessage
                         parentId={parentMessageIdForPath(window.location.pathname)}
-                        onCancel={() => navigate(null, 'chat', chatIdForPath(window.location.pathname))}
+                        onCancel={() => parentMessageIdForPath(window.location.pathname) === null
+                            ? navigate(null, 'chatTitles')
+                            : navigate(null, 'chat', chatIdForPath(window.location.pathname))}
                     />
                 )}
-                {activePage === 'addChatTitle' && <AddChatTitle onCancel={() => navigate(null, 'chatTitles')} />}
                 {activePage === 'about' && <AboutPage />}
             </main>
         </div>

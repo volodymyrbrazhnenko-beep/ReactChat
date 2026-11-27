@@ -23,13 +23,18 @@ function AddMessage({ parentId, onCancel }) {
 
         setIsSubmitting(true);
 
-        formData.set('parentMessageId', String(Number(parentId)));
+        if (parentId !== null) {
+            formData.set('parentMessageId', String(Number(parentId)));
+        } else {
+            formData.set('title', formData.get('title').trim());
+        }
         formData.set('email', formData.get('email').trim());
         formData.set('userName', formData.get('userName').trim());
         formData.set('text', formData.get('text').trim());
 
         try {
-            const response = await fetch('/api/chat/AddMessage', {
+            const action = parentId === null ? 'AddTitle' : 'AddMessage';
+            const response = await fetch(`/api/chat/${action}`, {
                 method: 'POST',
                 body: formData
             });
@@ -56,9 +61,11 @@ function AddMessage({ parentId, onCancel }) {
         }
     }
 
+    const isRootMessage = parentId === null;
+
     return (
         <section className="page mx-auto" style={{ maxWidth: '640px' }}>
-            <h1 className="h2 mb-4">Add Message</h1>
+            <h1 className="h2 mb-4">{isRootMessage ? 'Add Chat Title' : 'Add Message'}</h1>
             <form className="card card-body" onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label" htmlFor="message-email">eMail <span aria-hidden="true">*</span></label>
@@ -79,9 +86,16 @@ function AddMessage({ parentId, onCancel }) {
                     />
                 </div>
 
+                {isRootMessage && (
+                    <div className="mb-3">
+                        <label className="form-label" htmlFor="message-title">Title <span aria-hidden="true">*</span></label>
+                        <input className="form-control" id="message-title" name="title" type="text" maxLength="400" required />
+                    </div>
+                )}
+
                 <div className="mb-3">
-                    <label className="form-label" htmlFor="message-text">Text <span aria-hidden="true">*</span></label>
-                    <ChatTextEditor id="message-text" name="text" rows="5" required />
+                    <label className="form-label" htmlFor="message-text">Text {!isRootMessage && <span aria-hidden="true">*</span>}</label>
+                    <ChatTextEditor id="message-text" name="text" rows="5" required={!isRootMessage} />
                 </div>
 
                 <div className="mb-3">
@@ -89,9 +103,9 @@ function AddMessage({ parentId, onCancel }) {
                     <input className="form-control" id="message-files" name="files" type="file" accept=".txt,.php,.cs,.c,.css,.js,.jsx,.json,.http,.cshttp,.sql,.jpg,.gif,.png" multiple />
                 </div>
 
-                {error && <div className="alert alert-danger" role="alert">Unable to add message: {error}</div>}
+                {error && <div className="alert alert-danger" role="alert">Unable to add {isRootMessage ? 'chat title' : 'message'}: {error}</div>}
                 <div className="d-flex gap-2">
-                    <button type="submit" className="btn btn-primary" disabled={isSubmitting || !parentId}>
+                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
                     <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={isSubmitting}>
