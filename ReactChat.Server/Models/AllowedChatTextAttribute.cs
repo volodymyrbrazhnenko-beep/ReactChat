@@ -110,19 +110,6 @@ namespace ReactChat.Server.Models
                 return false;
             }
 
-            const string titlePrefix = " title=\"";
-            if (!token.AsSpan(hrefEnd).StartsWith(titlePrefix, StringComparison.Ordinal))
-            {
-                return false;
-            }
-
-            var titleStart = hrefEnd + titlePrefix.Length;
-            var titleEnd = token.IndexOf('"', titleStart);
-            if (titleEnd < 0 || titleEnd != token.Length - 2 || token[^1] != '>')
-            {
-                return false;
-            }
-
             href = token[prefix.Length..hrefEnd];
             return true;
         }

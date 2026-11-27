@@ -216,8 +216,7 @@ namespace ReactChat.Server.Services
 
         private static string GetTextContentType(string extension) => extension.ToLowerInvariant() switch
         {
-            ".php" => "application/x-httpd-php",
-            ".cs" or ".c" or ".css" or ".js" or ".jsx" or ".json" or ".http" or ".cshttp" or ".sql" => "text/plain",
+            ".php" or ".cs" or ".c" or ".css" or ".js" or ".jsx" or ".json" or ".http" or ".cshttp" or ".sql" => "text/plain",
             _ => "text/plain"
         };
 
